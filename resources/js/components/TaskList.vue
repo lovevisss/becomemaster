@@ -32,7 +32,7 @@
                 .then(response => {
                     this.project = response.data;
                 });
-            window.Echo.channel('tasks.' + this.project.id)
+            window.Echo.private('tasks.' + this.project.id)
                 .listen('TaskCreated', (e) => {
                     this.tasks.push(e.task);
                 });

@@ -20,3 +20,15 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 Broadcast::channel('orders', function ($user) {
     return true;
 });
+
+Broadcast::channel('tasks.{projectId}', function ($user, $projectId) {
+    if($user->id == 1)
+    {
+        $canAccess = [1,3];
+    }
+    else
+    {
+        $canAccess = [2,4];
+    }
+    return in_array($projectId, $canAccess);
+});

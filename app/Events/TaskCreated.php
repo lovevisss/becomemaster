@@ -32,7 +32,7 @@ class TaskCreated implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new Channel('tasks.'.$this->task->project_id),
+            new PrivateChannel('tasks.'.$this->task->project_id),
         ];
     }
 }
