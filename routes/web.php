@@ -17,66 +17,66 @@ use App\Events\OrderStatusUpdated;
 |
 */
 
-class Order{
-    public $id;
-    public function __construct($id){
-        $this->id = $id;
-    }
-}
+// class Order{
+//     public $id;
+//     public function __construct($id){
+//         $this->id = $id;
+//     }
+// }
 
 
 
-Route::get('/', function () {
-    // OrderStatusUpdated::dispatch(new Order(1));
-    return view('welcome');
-})->name('home');
+// Route::get('/', function () {
+//     // OrderStatusUpdated::dispatch(new Order(1));
+//     return view('welcome');
+// })->name('home');
 
-Route::get('/update' , function(){
-    OrderStatusUpdated::dispatch(new Order(5));
-    return 'done';
-});
+// Route::get('/update' , function(){
+//     OrderStatusUpdated::dispatch(new Order(5));
+//     return 'done';
+// });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-Route::get('/subscribe', function () {
-    return view('subscribe');
-})->middleware(['auth', 'verified'])->name('subscribe');
+// Route::get('/dashboard', function () {
+//     return view('dashboard');
+// })->middleware(['auth', 'verified'])->name('dashboard');
+// Route::get('/subscribe', function () {
+//     return view('subscribe');
+// })->middleware(['auth', 'verified'])->name('subscribe');
  
-// App::bind('App\Acme\Billing\BillingInterface', 'App\Acme\Billing\StripeBilling');
-Route::get('buy', function(){
-    return view('buy');
-});
+// // App::bind('App\Acme\Billing\BillingInterface', 'App\Acme\Billing\StripeBilling');
+// Route::get('buy', function(){
+//     return view('buy');
+// });
 
-Route::post('buy', [\App\Http\Controllers\CompanyController::class, 'buy'])->name('buy');
+// Route::post('buy', [\App\Http\Controllers\CompanyController::class, 'buy'])->name('buy');
 
-Route::get('/product-checkout', function (Request $request) {
-    return $request->user()->checkout('price_tshirt');
-});
+// Route::get('/product-checkout', function (Request $request) {
+//     return $request->user()->checkout('price_tshirt');
+// });
 
-Route::get('/redirect', function(){
-    $query = http_build_query([
-        'client_id' => '4',
-        'redirect_uri' => 'http://10.1.12.143/callback',
-        'response_type' => 'code',
-        'scope' => '',
-    ]);
-    return redirect('http://10.1.12.164/oauth/authorize?'.$query);
-});
+// Route::get('/redirect', function(){
+//     $query = http_build_query([
+//         'client_id' => '4',
+//         'redirect_uri' => 'http://10.1.12.143/callback',
+//         'response_type' => 'code',
+//         'scope' => '',
+//     ]);
+//     return redirect('http://10.1.12.164/oauth/authorize?'.$query);
+// });
 
-Route::get('/callback', function(Request $request){
-    $http = new GuzzleHttp\Client;
-    $response = $http->post('http://10.1.12.164/oauth/token', [
-        'form_params' => [
-            'grant_type' => 'authorization_code',
-            'client_id' => '4',
-            'client_secret' => 'BUybCfSMtLObrCEktxC6HVH8TMZd7mFwqkwUVteJ',
-            'redirect_uri' => 'http://10.1.12.143/callback',
-            'code' => $request->code,
-        ],
-    ]);
-    return json_decode((string) $response->getBody(), true);
-});
+// Route::get('/callback', function(Request $request){
+//     $http = new GuzzleHttp\Client;
+//     $response = $http->post('http://10.1.12.164/oauth/token', [
+//         'form_params' => [
+//             'grant_type' => 'authorization_code',
+//             'client_id' => '4',
+//             'client_secret' => 'BUybCfSMtLObrCEktxC6HVH8TMZd7mFwqkwUVteJ',
+//             'redirect_uri' => 'http://10.1.12.143/callback',
+//             'code' => $request->code,
+//         ],
+//     ]);
+//     return json_decode((string) $response->getBody(), true);
+// });
 
 
 
@@ -102,5 +102,24 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 require __DIR__.'/auth.php';

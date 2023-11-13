@@ -22,13 +22,14 @@ Broadcast::channel('orders', function ($user) {
 });
 
 Broadcast::channel('tasks.{projectId}', function ($user, $projectId) {
-    if($user->id == 1)
-    {
-        $canAccess = [1,3];
-    }
-    else
-    {
-        $canAccess = [2,4];
-    }
-    return in_array($projectId, $canAccess);
+    // if($user->id == 1)
+    // {
+    //     $canAccess = [1,3];
+    // }
+    // else
+    // {
+    //     $canAccess = [2,4];
+    // }
+    // return in_array($projectId, $canAccess);
+    return true;
 });

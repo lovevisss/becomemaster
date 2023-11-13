@@ -33,9 +33,17 @@
     <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
    
     {{-- stripe js --}}
-    <script src="https://js.stripe.com/v2/"></script>
+    {{-- <script src="https://js.stripe.com/v2/"></script> --}}
     {{-- <script src="{{asset('js/app.js')}}"></script> --}}
 
     @yield('scripts')
+    
+    <script>
+        window.App = <?= json_encode([
+            'csrfToken' => csrf_token(),
+            'user' => Auth::user(),
+            'signedIn' => Auth::check()
+        ]); ?>
+    </script>
   
 </html>

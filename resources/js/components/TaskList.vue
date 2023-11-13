@@ -7,19 +7,21 @@
             </li>
         </ul>
 
-        <input type="text" v-model="newTask" @blur="addTask">
+        <input type="text" v-model="newTask" @blur="addTask" @keydown="tapParticipants">
+        <span v-if="activePeer" v-text="activePeer.name + ' is typing...'"></span>
     </div>
 </template>
 
 
 <script>
     export default {
-        props: ['project'],
+        props: ['project','user'],
         data() {
             return {
                 project: this.project,
                 tasks: [],
-                newTask: ''
+                newTask: '',
+                activePeer: false
             }
         },
         mounted() {
@@ -35,11 +37,17 @@
             window.Echo.private('tasks.' + this.project.id)
                 .listen('TaskCreated', (e) => {
                     this.tasks.push(e.task);
+                })
+                .listenForWhisper('typing', (e) => {
+                    this.activePeer = e;
+
+                   
                 });
         },
 
         methods: {
             addTask() {
+                this.activePeer = false;
                 axios.post(`/api/projects/${this.project.id}/tasks`, {
                     description: this.newTask,
                     name: 'John Doe',
@@ -53,6 +61,13 @@
                     this.tasks.push(response.data);
                     this.newTask = '';
                 });
+            },
+
+            tapParticipants(e) {
+                window.Echo.private('tasks.' + this.project.id)
+                    .whisper('typing', {
+                        name: 'John Doe'
+                    });
             }
         }
     }   

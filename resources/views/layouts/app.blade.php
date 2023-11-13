@@ -13,6 +13,13 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <script>
+            window.App = <?= json_encode([
+                'csrfToken' => csrf_token(),
+                'user' => Auth::user(),
+                'signedIn' => Auth::check()
+            ]); ?>
+        </script>
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">
