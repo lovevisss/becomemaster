@@ -159,7 +159,8 @@ return [
         /*
          * Package Service Providers...
          */
-
+        \InfyOm\Generator\InfyOmGeneratorServiceProvider::class,
+        \InfyOm\AdminLTETemplates\AdminLTETemplatesServiceProvider::class,
         /*
          * Application Service Providers...
          */

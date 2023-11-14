@@ -2,20 +2,25 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Role extends Model
 {
-    use HasFactory;
-    protected $guarded = [];
+    public $table = 'roles';
 
-    // users
-    public function users()
-    {
-        return $this->hasMany(User::class);
-    }
+    public $fillable = [
+        'name'
+    ];
 
-    // permissions
+    protected $casts = [
+        'name' => 'string'
+    ];
 
+    public static array $rules = [
+        'name' => 'required|string|max:255',
+        'created_at' => 'nullable',
+        'updated_at' => 'nullable'
+    ];
+
+    
 }

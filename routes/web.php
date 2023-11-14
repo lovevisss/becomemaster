@@ -123,3 +123,8 @@ Route::middleware('auth')->group(function () {
 
 
 require __DIR__.'/auth.php';
+
+Route::resource('qrcodes', App\Http\Controllers\QrcodeController::class);
+Route::resource('roles', App\Http\Controllers\RoleController::class);
+Route::resource('users', App\Http\Controllers\UserController::class);
+Route::resource('transactions', App\Http\Controllers\TransactionController::class);

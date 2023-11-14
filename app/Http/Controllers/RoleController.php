@@ -2,64 +2,127 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Role;
+use App\Http\Requests\CreateRoleRequest;
+use App\Http\Requests\UpdateRoleRequest;
+use App\Http\Controllers\AppBaseController;
+use App\Repositories\RoleRepository;
 use Illuminate\Http\Request;
+use Flash;
 
-class RoleController extends Controller
+class RoleController extends AppBaseController
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    /** @var RoleRepository $roleRepository*/
+    private $roleRepository;
+
+    public function __construct(RoleRepository $roleRepo)
     {
-        //
+        $this->roleRepository = $roleRepo;
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Display a listing of the Role.
+     */
+    public function index(Request $request)
+    {
+        $roles = $this->roleRepository->paginate(10);
+
+        return view('roles.index')
+            ->with('roles', $roles);
+    }
+
+    /**
+     * Show the form for creating a new Role.
      */
     public function create()
     {
-        //
+        return view('roles.create');
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created Role in storage.
      */
-    public function store(Request $request)
+    public function store(CreateRoleRequest $request)
     {
-        //
+        $input = $request->all();
+
+        $role = $this->roleRepository->create($input);
+
+        Flash::success('Role saved successfully.');
+
+        return redirect(route('roles.index'));
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified Role.
      */
-    public function show(Role $role)
+    public function show($id)
     {
-        //
+        $role = $this->roleRepository->find($id);
+
+        if (empty($role)) {
+            Flash::error('Role not found');
+
+            return redirect(route('roles.index'));
+        }
+
+        return view('roles.show')->with('role', $role);
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Show the form for editing the specified Role.
      */
-    public function edit(Role $role)
+    public function edit($id)
     {
-        //
+        $role = $this->roleRepository->find($id);
+
+        if (empty($role)) {
+            Flash::error('Role not found');
+
+            return redirect(route('roles.index'));
+        }
+
+        return view('roles.edit')->with('role', $role);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified Role in storage.
      */
-    public function update(Request $request, Role $role)
+    public function update($id, UpdateRoleRequest $request)
     {
-        //
+        $role = $this->roleRepository->find($id);
+
+        if (empty($role)) {
+            Flash::error('Role not found');
+
+            return redirect(route('roles.index'));
+        }
+
+        $role = $this->roleRepository->update($request->all(), $id);
+
+        Flash::success('Role updated successfully.');
+
+        return redirect(route('roles.index'));
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified Role from storage.
+     *
+     * @throws \Exception
      */
-    public function destroy(Role $role)
+    public function destroy($id)
     {
-        //
+        $role = $this->roleRepository->find($id);
+
+        if (empty($role)) {
+            Flash::error('Role not found');
+
+            return redirect(route('roles.index'));
+        }
+
+        $this->roleRepository->delete($id);
+
+        Flash::success('Role deleted successfully.');
+
+        return redirect(route('roles.index'));
     }
 }

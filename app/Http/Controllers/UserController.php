@@ -2,66 +2,127 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use App\Http\Requests\CreateUserRequest;
+use App\Http\Requests\UpdateUserRequest;
+use App\Http\Controllers\AppBaseController;
+use App\Repositories\UserRepository;
 use Illuminate\Http\Request;
+use Flash;
 
-class UserController extends Controller
+class UserController extends AppBaseController
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    /** @var UserRepository $userRepository*/
+    private $userRepository;
+
+    public function __construct(UserRepository $userRepo)
     {
-        //
+        $this->userRepository = $userRepo;
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Display a listing of the User.
+     */
+    public function index(Request $request)
+    {
+        $users = $this->userRepository->paginate(10);
+
+        return view('users.index')
+            ->with('users', $users);
+    }
+
+    /**
+     * Show the form for creating a new User.
      */
     public function create()
     {
-        //
+        return view('users.create');
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created User in storage.
      */
-    public function store(Request $request)
+    public function store(CreateUserRequest $request)
     {
-        //
+        $input = $request->all();
+
+        $user = $this->userRepository->create($input);
+
+        Flash::success('User saved successfully.');
+
+        return redirect(route('users.index'));
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified User.
      */
-    public function show(User $user)
+    public function show($id)
     {
-        // return $user->tasks;
-        $tasks = $user->tasks;
-        return view('tasks.index', compact('tasks'));
+        $user = $this->userRepository->find($id);
+
+        if (empty($user)) {
+            Flash::error('User not found');
+
+            return redirect(route('users.index'));
+        }
+
+        return view('users.show')->with('user', $user);
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Show the form for editing the specified User.
      */
-    public function edit(User $user)
+    public function edit($id)
     {
-        //
+        $user = $this->userRepository->find($id);
+
+        if (empty($user)) {
+            Flash::error('User not found');
+
+            return redirect(route('users.index'));
+        }
+
+        return view('users.edit')->with('user', $user);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified User in storage.
      */
-    public function update(Request $request, User $user)
+    public function update($id, UpdateUserRequest $request)
     {
-        //
+        $user = $this->userRepository->find($id);
+
+        if (empty($user)) {
+            Flash::error('User not found');
+
+            return redirect(route('users.index'));
+        }
+
+        $user = $this->userRepository->update($request->all(), $id);
+
+        Flash::success('User updated successfully.');
+
+        return redirect(route('users.index'));
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified User from storage.
+     *
+     * @throws \Exception
      */
-    public function destroy(User $user)
+    public function destroy($id)
     {
-        //
+        $user = $this->userRepository->find($id);
+
+        if (empty($user)) {
+            Flash::error('User not found');
+
+            return redirect(route('users.index'));
+        }
+
+        $this->userRepository->delete($id);
+
+        Flash::success('User deleted successfully.');
+
+        return redirect(route('users.index'));
     }
 }
