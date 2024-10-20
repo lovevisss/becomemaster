@@ -2,10 +2,18 @@
 
 namespace App\Models;
 
+use App\Acme\Parser;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
-class User extends Model
+
+class User extends Authenticatable
 {
+
+    use HasApiTokens, HasFactory, Notifiable;
     public $table = 'users';
 
     public $fillable = [
@@ -62,6 +70,18 @@ class User extends Model
         'trial_ends_at' => 'nullable'
     ];
 
+    public static function CreateOrUpdate(array $rowData)
+    {
+        $result = Parser::ParseArray($rowData, ["联系人", "联系电话"]);
+        $user = User::where('phone', $result["联系电话"])->first();
+        if(!$user){
+            User::create([
+                'name' => $result["联系人"],
+                'phone' => $result["联系电话"],
+            ]) ;
+        }
+    }
+
     public function comments(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(\App\Models\Comment::class, 'user_id');
@@ -80,5 +100,10 @@ class User extends Model
     public function tasks(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(\App\Models\Task::class, 'user_id');
+    }
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class, 'company_id');
     }
 }

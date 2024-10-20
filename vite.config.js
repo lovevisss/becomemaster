@@ -5,7 +5,7 @@ import vue from '@vitejs/plugin-vue';
 export default defineConfig({
     server: {
         hmr: {
-            host: '10.1.12.143', // your ip
+            host: '10.1.16.209', // your ip
             overlay: false,
         },
     },
@@ -28,9 +28,9 @@ export default defineConfig({
                 },
             },
         }),
-        
 
-        
+
+
 
         {
             name:'blade',

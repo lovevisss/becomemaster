@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('projects', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->longText('description');
-            // $table->integer('company_id')->unsigned()->nullable();
+            $table->longText('description')->nullable();
+             $table->integer('company_id')->unsigned()->nullable();
             // $table->integer('user_id')->unsigned()->nullable();
             $table->integer('days')->unsigned()->nullable();
             // $table->foreignId('user_id')->constrained();

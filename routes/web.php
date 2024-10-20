@@ -35,14 +35,21 @@ use App\Events\OrderStatusUpdated;
 //     OrderStatusUpdated::dispatch(new Order(5));
 //     return 'done';
 // });
+Route::get('/', function (){
+    return 'index';
+});
 
-// Route::get('/dashboard', function () {
-//     return view('dashboard');
-// })->middleware(['auth', 'verified'])->name('dashboard');
-// Route::get('/subscribe', function () {
-//     return view('subscribe');
-// })->middleware(['auth', 'verified'])->name('subscribe');
- 
+Route::get('/testWord', [\App\Http\Controllers\WordController::class, 'getTestPage']);
+
+Route::post('testWord', [\App\Http\Controllers\WordController::class, 'test'])->name('upload.file');
+
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/subscribe', function () {
+    return view('subscribe');
+})->middleware(['auth', 'verified'])->name('subscribe');
+
 // // App::bind('App\Acme\Billing\BillingInterface', 'App\Acme\Billing\StripeBilling');
 // Route::get('buy', function(){
 //     return view('buy');

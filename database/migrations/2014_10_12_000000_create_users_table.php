@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->integer('role_id')->unsigned()->default(4);
-            $table->string('email')->unique();
+            $table->string('email')->unique()->nullable();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->integer("role_id")->unsigned()->default(1);
+            $table->string('phone')->nullable();
+            $table->string('password')->nullable();
             $table->integer("company_id")->unsigned()->nullable();
             $table->string("first_name")->nullable();
             $table->string("last_name")->nullable();
