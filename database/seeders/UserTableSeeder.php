@@ -18,6 +18,11 @@ class UserTableSeeder extends Seeder
         User::truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
         User::factory(10)->create();
+        User::create([
+            'email' => '530822987@qq.com',
+            'name' => 'loveisss',
+            'password' => bcrypt('dfxy@123')
+        ]);
 
     }
 }

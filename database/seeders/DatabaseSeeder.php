@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
         // ]);
         $this->call('\Database\Seeders\UserTableSeeder');
-        $this->call('\Database\Seeders\TaskTableSeeder');
+//        $this->call('\Database\Seeders\TaskTableSeeder');
         // $this->call('\Database\Seeders\ProjectTableSeeder');
         // $this->call('RoleTableSeeder');
     }

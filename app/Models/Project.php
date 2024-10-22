@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Acme\Parser;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -13,6 +14,19 @@ class Project extends Model
     protected $guarded = [];
 
     // tasks
+    public static function CreateOrUpdate(array $rowData)
+    {
+        $result = Parser::Parse($rowData, "项目名称");
+        $project = Project::where('name', $result)->first();
+        if(!$project){
+            $project = Project::create([
+                'name' => $result,
+            ]) ;
+        }
+
+        return $project;
+    }
+
     public function tasks()
     {
         return $this->hasMany(Task::class);

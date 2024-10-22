@@ -21,10 +21,11 @@ class Company extends Model
             echo "收款单位后面的值是: " . $companyName;
             $existingCompany = Company::where('name', $companyName)->first();
             if(!$existingCompany){
-                Company::create([
+                $existingCompany =  Company::create([
                     'name' => $companyName
                 ]);
             }
+            return $existingCompany;
 
         } else {
             echo "未找到收款单位字段";

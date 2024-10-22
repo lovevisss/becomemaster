@@ -19,6 +19,7 @@ class User extends Authenticatable
     public $fillable = [
         'name',
         'email',
+        'phone',
         'email_verified_at',
         'password',
         'role_id',
@@ -73,13 +74,15 @@ class User extends Authenticatable
     public static function CreateOrUpdate(array $rowData)
     {
         $result = Parser::ParseArray($rowData, ["联系人", "联系电话"]);
+//        dd($result["联系电话"]);
         $user = User::where('phone', $result["联系电话"])->first();
         if(!$user){
-            User::create([
+            $user = User::create([
                 'name' => $result["联系人"],
                 'phone' => $result["联系电话"],
             ]) ;
         }
+        return $user;
     }
 
     public function comments(): \Illuminate\Database\Eloquent\Relations\HasMany
