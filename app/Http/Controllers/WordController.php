@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BankAccount;
 use App\Models\Company;
 use App\Models\Contract;
+use App\Models\Funding;
+use App\Models\Payment;
 use App\Models\Project;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -50,9 +53,11 @@ class WordController extends Controller
 //        dd($rowData);
         $company = Company::CreateOrUpdate($rowData);
         $user = User::CreateOrUpdate($rowData);
-        $user->company()->save($company);
-        $project = Project::CreateOrUpdate($rowData);
-        Contract::CreateOrUpdate($rowData);
+        $user->company()->associate($company);
+        $user->save();
+
+        $this->processData($rowData, $company);
+
 
         return view('form.BigPay', compact('rowData'));
     }
@@ -89,5 +94,32 @@ class WordController extends Controller
         }
 
         return $tableData;
+    }
+
+    /**
+     * @param array $rowData
+     * @param $company
+     * @return void
+     */
+    public function processData(array $rowData, $company): void
+    {
+        $project = Project::CreateOrUpdate($rowData);
+        $project->company()->associate($company); //项目属于公司
+        $project->save();
+        $contract = Contract::CreateOrUpdate($rowData);
+//        dd($contract);
+        $contract->project()->associate($project); //合同属于项目
+        $contract->save();
+
+        $payment = Payment::CreateOrUpdate($rowData);
+//        payment belongs to contract
+        $contract->payments()->save($payment);
+
+        $bankAccount = BankAccount::CreateOrUpdate($rowData);
+
+        $company->bankAccount()->save($bankAccount);
+
+        $funding = Funding::CreateOrUpdate($rowData);
+        $project->funding()->save($funding);
     }
 }

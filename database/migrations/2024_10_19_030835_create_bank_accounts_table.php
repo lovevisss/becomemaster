@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('number');
-            $table->unsignedInteger('company_id');
+            $table->unsignedInteger('company_id')->nullable();
             $table->timestamps();
         });
     }

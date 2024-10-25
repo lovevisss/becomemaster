@@ -49,4 +49,14 @@ class Project extends Model
     {
         return $this->morphMany(Comment::class, 'commentable')->latest();
     }
+
+    public function Contracts(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Contract::class);
+    }
+
+    public function funding()
+    {
+        return $this->hasOne(Funding::class);
+    }
 }

@@ -48,6 +48,11 @@ class Company extends Model
         return $this->morphMany(Comment::class, 'commentable')->latest();
     }
 
+    public function bankAccount()
+    {
+        return $this->hasOne(BankAccount::class);
+    }
+
 
 
 

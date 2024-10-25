@@ -14,9 +14,12 @@ return new class extends Migration
         Schema::create('contracts', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('year')->nullable();
+            $table->unique(['year', 'name']);
             $table->double('amount');
             $table->double('fulfillmentDeposit');
             $table->double('paid_amount')->nullable();
+            $table->unsignedInteger('project_id')->nullable();
 
 
             $table->timestamps();
