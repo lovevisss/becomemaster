@@ -64,7 +64,10 @@ class ApplyFormController extends Controller
      */
     public function update(Request $request, ApplyForm $applyForm)
     {
-        //
+//        dd($request);
+        $applyForm->reason = $request->get('reason');
+        $applyForm->save();
+        return "success";
     }
 
     /**

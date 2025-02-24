@@ -8,4 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class ApplyForm extends Model
 {
     use HasFactory;
+
+    protected $fillable = ['reason', 'path'];
 }

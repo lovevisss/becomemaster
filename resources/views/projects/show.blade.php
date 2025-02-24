@@ -38,11 +38,16 @@
                 申请阶段
                 <span class="fa fa-vote-yea" style="color: {{$project->apply_Form? 'greenyellow': 'red'}}; font-size: 1em"></span>
             </h2>
-            @if($project->apply_form)
-                <img src="/storage/{{$project->apply_form->path}}">
+            @if($project->apply_forms)
+                @foreach($project->apply_forms as $form)
+                    <single-apply-file :form="{{$form}}"></single-apply-file>
 
+                @endforeach
             @endif
+{{--            add button for new apply form--}}
+            <button class="btn btn-primary mt-2">添加申请表</button>
         </div>
+        <hr>
     <form method="GET" action="{{route('projects.getBigPayForm', $project->id)}}">
         <button type="submit" class="btn btn-primary mt-3">获取支付审核表</button>
     </form>

@@ -62,9 +62,9 @@ class Project extends Model
         return $this->hasOne(Funding::class);
     }
 
-    public function apply_form()
+    public function apply_forms()
     {
-        return $this->hasOne(ApplyForm::class);
+        return $this->hasMany(ApplyForm::class);
     }
 
 
