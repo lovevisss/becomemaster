@@ -1,0 +1,136 @@
+<#-- 按照您的需求，编写样式代码。-->
+<table width="528" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+        <td align="center" valign="top"><table border="0" cellspacing="0" cellpadding="0">
+            <tr>
+                <td id="ww_1" onmouseover="checkDIVS(1,4)" align="center" valign="middle" class="bg004">馆藏书目检索</td>
+                <td id="ww_2" onmouseover="checkDIVS(2,4)" align="center" valign="middle" class="bg005">财大馆藏书目检索</td>
+                <td id="ww_3" onmouseover="checkDIVS(3,4)" align="center" valign="middle" class="bg005">移动数字图书馆</td>
+                <td id="ww_4" onmouseover="checkDIVS(4,4)" align="center" valign="middle" class="bg005">我的图书馆</td>
+            </tr>
+        </table></td>
+    </tr>
+    <tr>
+        <td align="center" valign="top" class="bg003">
+            <table id="list_1" border="0" width="475" cellspacing="0" cellpadding="0" style="margin-top:12px;">
+                <form target="_blank" action="http://libsearch.zufedfc.edu.cn/opac/openlink.php" method="get" name="f" onsubmit="return chkForm(this)" id="f">
+                    <tr>
+                        <td height="30" align="left" valign="middle">说明：查找馆藏纸本和图书和期刊或<a href="http://libsearch.zufedfc.edu.cn/opac/search.php" target="_blank" style="color:#F00">点击直接访问书目检索系统</a></td>
+                    </tr>
+                    <tr>
+                        <td height="35" align="left" valign="middle">
+                            <select class="option" name="strSearchType" size="1" style="width:90px;">
+                                <option value="title">题&nbsp;&nbsp;名</option>
+                                <option value="author">责任者</option>
+                                <option value="keyword">主题词</option>
+                                <option value="isbn">ISBN/ISSN</option>
+                                <option value="asordno">订购号</option>
+                                <option value="coden">分类号</option>
+                                <option value="callno">索书号</option>
+                                <option value="publisher">出版社</option>
+                                <option value="series">丛书名</option>
+                                <option value="tpinyin">题名拼音</option>
+                                <option value="apinyin">责任者拼音</option>
+                            </select>
+                            <select class="option" name="match_flag" size="1" style="width:90px;">
+                                <option value="forward">前方一致</option>
+                                <option value="full">完全匹配</option>
+                                <option value="any">任意匹配</option>
+                            </select>
+                            <input type="hidden" id="historyCount" name="historyCount" value="1" />
+                            <input type="text" size="45" name="strText" id="strText" value="" style="width:190px;">&nbsp;<input type="image" src="${v_link("/images/80-27.jpg")}" width="68" height="23" align="absmiddle" /></td>
+                    </tr>
+                    <tr>
+                        <td height="30" align="left" valign="middle">
+                            <input type="radio" name="doctype" value="ALL" checked="checked" />所有书刊
+                            <input type="radio" name="doctype" value="01" />中文图书
+                            <input type="radio" name="doctype" value="02" />西文图书
+                            <input type="radio" name="doctype" value="11" />中文期刊
+                            <input type="radio" name="doctype" value="12" />西文期刊
+                        </td>
+                    </tr></form>
+            </table>
+            <table id="list_2" border="0" width="475" cellspacing="0" cellpadding="0" style="display:none;">
+                <form target="_blank" action="http://opac.zufe.edu.cn:8080/opac/openlink.php" method="get" name="f" onsubmit="return chkForm(this)" id="f">
+
+                    <tr>
+                        <td height="35" align="left" valign="middle">
+                            <select class="option" name="strSearchType" size="1" style="width:90px;">
+                                <option value="title">题&nbsp;&nbsp;名</option>
+                                <option value="author">责任者</option>
+                                <option value="keyword">主题词</option>
+                                <option value="isbn">ISBN/ISSN</option>
+                                <option value="asordno">订购号</option>
+                                <option value="coden">分类号</option>
+                                <option value="callno">索书号</option>
+                                <option value="publisher">出版社</option>
+                                <option value="series">丛书名</option>
+                                <option value="tpinyin">题名拼音</option>
+                                <option value="apinyin">责任者拼音</option>
+                            </select>
+                            <select class="option" name="match_flag" size="1" style="width:90px;">
+                                <option value="forward">前方一致</option>
+                                <option value="full">完全匹配</option>
+                                <option value="any">任意匹配</option>
+                            </select>
+                            <input type="hidden" id="historyCount" name="historyCount" value="1" />
+                            <input type="text" size="45" name="strText" id="strText" value="" style="width:190px;">&nbsp;<input type="image" src="${v_link("/images/80-27.jpg")}" width="68" height="23" align="absmiddle" /></td>
+                    </tr>
+                    <tr>
+                        <td height="30" align="left" valign="middle">说明：查找财大馆藏纸本和图书和期刊或<a href="http://opac.zufe.edu.cn:8080/opac/search.php" target="_blank" style="color:#F00">点击直接访问书目检索系统</a></td>
+                    </tr>
+                </form>
+            </table>
+<!--            <table id="list_2" width="475" border="0" cellspacing="0" cellpadding="0" style="display:none; margin-top:30px;">-->
+<!--                <tr>-->
+<!--                    <td align="center" valign="middle"><iframe allowtransparency="true" id="duxiuframe14" border="0" vspace="0" hspace="0" marginwidth="0" marginheight="0" framespacing="0" frameborder="0" scrolling="no" width="400" height="66" src="http://www.duxiu.com/pop/isearch.jsp?style=14&sw=%CA%E4%C8%EB%BC%EC%CB%F7%B4%CA"></iframe>-->
+<!--                    </td>-->
+<!--                </tr>-->
+<!--            </table>-->
+
+            <table id="list_3" width="528" border="0" cellspacing="0" cellpadding="0" style="display:none;">
+                <tr>
+                    <td align="center" valign="middle"><a href="http://lib.zufedfc.edu.cn//content/detail.php?sid=61&cid=697" target="_blank"><img src="${v_link("/images/yd.jpg")}" align="absmiddle" border="0" /></a></td>
+                </tr>
+            </table>
+            <script type="text/javascript" src="js/jquery.1.7.1.min.js"></script>
+            <script language="JavaScript" type="text/javascript">
+                $(function(){
+                    $("#captcha_tips").hide();
+                    $("#img").hide();
+                    $("#captcha").focus(function(){
+                        $("#captcha_tips").show();
+                        $("#img").attr("src","http://libsearch.zufedfc.edu.cn/reader/captcha.php?code=" + $("#number").val());
+                        $("#img").show();
+                    });
+                });
+            </script>
+            <table id="list_4" width="475" border="0" cellspacing="0" cellpadding="0" style="margin-top:20PX; display:none;">
+                <form target="_blank" action="http://libsearch.zufedfc.edu.cn/reader/redr_verify.php" name="frm_login" method="POST">
+                    <tr>
+                        <td width="70" height="25" align="right" valign="middle">用户名：</td>
+                        <td width="167" height="25" align="left" valign="middle"><input onfocus="if(value=='请输入证件号') {value=''}" onblur="if(value=='') {value='请输入证件号'}" value="请输入证件号" class="input" id="number" name="number" type="text" size="20" style="width:150px; color:#999;"></td>
+                        <td width="70" align="right" valign="middle">密码：</td>
+                        <td width="168" align="left" valign="middle"><input class="input" name="passwd" type="password" size="20" style="width:150px"></td>
+                    </tr>
+                    <tr>
+                        <td width="70" height="25" align="right" valign="middle">验证码：</td>
+                        <td width="167" height="25" align="left" valign="middle"><input id="captcha" class="input" name="captcha" type="text" size="20" placeholder="点击获取验证码" style="width:150px"></td>
+                        <td height="25" colspan="2" align="left" valign="middle" id="captcha_tips">&nbsp;<img id="img" height="33" align="absmiddle" src="" />&nbsp;输入<font color="red">红色</font>部分</td>
+                    </tr>
+                    <tr style="display:none;">
+                        <td width="70" height="25" align="right" valign="middle">&nbsp;</td>
+                        <td height="25" colspan="3" align="left" valign="middle">
+                            <input type="Radio" name="select" value="cert_no" checked="checked" />证件号
+                            <input type="Radio" name="select" value="bar_no" />条码号
+                            <input type="Radio" name="select" value="email" />Email</td>
+                    </tr>
+                    <tr>
+                        <td width="70" height="35" align="right" valign="middle">&nbsp;</td>
+                        <td height="35" colspan="3" align="left" valign="middle"><input class="btn btn-danger" type="submit" value="登录"><input type="hidden" name="returnUrl" value="" />
+                            <input class="btn" type="button" value="密码取回" onclick="javascript:location.href='http://libsearch.zufedfc.edu.cn/reader/get_pwd.php' " /></td>
+                    </tr>
+                </form>
+            </table></td>
+    </tr>
+</table>

@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedInteger('project_id');
             $table->string('path');
+            $table->string('reason');
+            $table->unsignedInteger('user_id');
             $table->timestamps();
         });
     }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ApplyForm;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ApplyFormController extends Controller
 {
@@ -28,7 +29,18 @@ class ApplyFormController extends Controller
      */
     public function store(Request $request)
     {
-        //
+//        dd($request);
+//        store file
+
+
+        $applyForm = new ApplyForm();
+        $applyForm->project_id = $request->project_id;
+        $applyForm->path = $request->file('file')->store('apply_form', 'public');
+        $applyForm->user_id = $request->user_id;
+        $applyForm->reason = $request->reason;
+        $applyForm->save();
+//        $applyForm->address = $request->address;
+        return 'success';
     }
 
     /**

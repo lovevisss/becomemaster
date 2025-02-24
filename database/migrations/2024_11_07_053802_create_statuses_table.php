@@ -11,14 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('companies', function (Blueprint $table) {
+        Schema::create('statuses', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
-            $table->string('tax_id')->unique()->nullable();
-            $table->string('address')->nullable();
-            $table->string('telephone')->nullable();
-            $table->longText('description')->nullable();
-
+            $table->string('name'); //申请，实施，结算，完成，已退质保金
             $table->timestamps();
         });
     }
@@ -28,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('companies');
+        Schema::dropIfExists('statuses');
     }
 };

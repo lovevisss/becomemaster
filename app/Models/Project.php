@@ -13,6 +13,8 @@ class Project extends Model
     use HasFactory;
     protected $guarded = [];
 
+    protected $with = ['company'];
+
     // tasks
     public static function CreateOrUpdate(array $rowData)
     {
@@ -39,7 +41,7 @@ class Project extends Model
     }
 
     // company
-    public function company()
+    public function company(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Company::class);
     }
@@ -50,7 +52,7 @@ class Project extends Model
         return $this->morphMany(Comment::class, 'commentable')->latest();
     }
 
-    public function Contracts(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function contracts(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Contract::class);
     }
@@ -59,4 +61,11 @@ class Project extends Model
     {
         return $this->hasOne(Funding::class);
     }
+
+    public function apply_form()
+    {
+        return $this->hasOne(ApplyForm::class);
+    }
+
+
 }

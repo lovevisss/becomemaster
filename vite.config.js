@@ -16,6 +16,7 @@ export default defineConfig({
                 'resources/css/offcanvas-navbar.css',
                 'resources/js/*.js',
                 'resources/js/app.js',
+                'resources/scss/style.scss'
             ],
             refresh: true,
         }),
@@ -51,6 +52,7 @@ handleHotUpdate({ file, server }) {
     //     ]
     // },
     build: {
+        manifest: true,
         outDir: 'public/javascript',
         emptyOutDir: true,
         rollupOptions: {

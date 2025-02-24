@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ApplyForm;
 use App\Models\Payment;
 use Illuminate\Http\Request;
 
@@ -28,7 +29,7 @@ class PaymentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
     }
 
     /**
@@ -52,7 +53,7 @@ class PaymentController extends Controller
      */
     public function update(Request $request, Payment $payment)
     {
-        //
+
     }
 
     /**
@@ -61,5 +62,16 @@ class PaymentController extends Controller
     public function destroy(Payment $payment)
     {
         //
+    }
+
+    public function updateInvoice(Request $request)
+    {
+        $payment = Payment::find($request->payment_id);
+
+        $payment->invoice = $request->file('file')->store('invoice', 'public');
+
+        $payment->save();
+//        $applyForm->address = $request->address;
+        return 'success';
     }
 }

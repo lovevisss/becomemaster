@@ -19,11 +19,12 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('phone')->nullable()->unique();
             $table->string('password')->nullable();
-            $table->integer("company_id")->unsigned()->nullable();
+            $table->foreignId("company_id")->unsigned()->nullable();
             $table->string("first_name")->nullable();
             $table->string("last_name")->nullable();
             $table->string("city")->nullable();
             $table->string("billing_id")->nullable();
+            $table->unsignedInteger('department_id')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

@@ -11,6 +11,7 @@ use App\Models\Project;
 use App\Models\User;
 use Illuminate\Http\Request;
 use PhpOffice\PhpWord\Element\Table;
+use PhpOffice\PhpWord\Element\TextRun;
 use PhpOffice\PhpWord\IOFactory;
 
 class WordController extends Controller
@@ -122,4 +123,60 @@ class WordController extends Controller
         $funding = Funding::CreateOrUpdate($rowData);
         $project->funding()->save($funding);
     }
+
+    public function writeExcel()
+    {
+        $file = public_path('/excel/bigPay.docx');
+
+        $phpWord = IOFactory::load($file);
+//        遍历section 找到收款单位，在后面一个区块填入荣志有限公司
+
+        $sections = $phpWord->getSections();
+        foreach ($sections as $section) {
+            $elements = $section->getElements();
+            foreach ($elements as $element) {
+                if ($element instanceof Table) {
+                    $this->writeTable($element, '上海疏微网络');
+                }
+            }
+        }
+
+        $outputpath = public_path('/excel/helloWorld.docx');
+        $objWriter = IOFactory::createWriter($phpWord, 'Word2007');
+        $objWriter->save($outputpath);
+        return "success changed23";
+    }
+
+    private function writeTable($table, $company)
+    {
+
+//        dd($table);
+        $rows = $table->getRows();
+        foreach ($rows as $row) {
+            $cells = $row->getCells();
+            foreach ($cells as $cell) {
+                $textRuns = $cell->getElements();
+                foreach ($textRuns as $textRun) {
+                    if ($textRun instanceof \PhpOffice\PhpWord\Element\TextRun) {
+                        $text = $textRun->getText();
+                        if (strpos($text, '收款单位') !== false) {
+//                            获取下一个$cells
+                            $netCell = next($cells);
+                            $netTextRuns = $netCell->getElements();
+                            foreach ($netTextRuns as $netTextRun) {
+                                if ($netTextRun instanceof \PhpOffice\PhpWord\Element\TextRun) {
+                                    $netTextRun->addText($company);
+//                                    dd($netTextRun->getText());
+                                }
+                            }
+//                            dd('find'.$text.$company);
+//                            $textRun->setText('收款单位：' . $company);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
 }

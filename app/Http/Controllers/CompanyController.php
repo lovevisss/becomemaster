@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Company;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 use App;
@@ -18,12 +19,16 @@ class CompanyController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // $companies = Company::all();
+         $companies = Company::all();
 
-        $companies = Company::where('user_id', auth()->user()->id)->get();
-   
+         if($request->wantsJson()){
+             return $companies;
+         }
+
+//        $companies = Company::where('user_id', auth()->user()->id)->get();
+
         return view('companies.index', compact('companies'));
     }
 
@@ -43,7 +48,6 @@ class CompanyController extends Controller
         $company = Company::create([
             'name' => $request->name,
             'description' => $request->description,
-            'user_id' => auth()->user()->id,
         ]);
 
         // with message success
@@ -67,7 +71,8 @@ class CompanyController extends Controller
      */
     public function edit(Company $company)
     {
-        return view('companies.edit', compact('company'));
+        $users = User::all();
+        return view('companies.edit', compact('company', 'users'));
     }
 
     /**
@@ -79,6 +84,12 @@ class CompanyController extends Controller
             'name' => $request->name,
             'description' => $request->description,
         ]);
+
+        $user = User::find($request->user_id);
+        $user->update([
+            'company_id' => $company->id]
+        );
+
         // with message success
         // session()->flash('message', 'Company updated successfully');
 
@@ -105,16 +116,16 @@ class CompanyController extends Controller
                     'description' => $request->input('email'),
                 ]
             );
-    
+
             $user = auth()->user();
             $user->billing_id = $customerid;
             $user->save();
-    
+
             return 'Charged successfully';
         }catch(Exception $e){
             return Redirect::refresh()->withFlashMessage($e->getMessage());
         }
         // dd($request->all());
-       
+
     }
 }

@@ -2,15 +2,16 @@
 
 @section("content")
 
-<div class="bg-dark text-secondary px-4 py-5 text-center">
+<div class="bg-dark text-secondary px-4 py-5 text-center " >
     <div class="py-5">
       <h1 class="display-5 fw-bold text-white">{{$project->name}}</h1>
       <div class="col-lg-6 mx-auto">
-        <p class="fs-5 mb-4">{{$project->description}}</p>
-        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-          <a type="button" class="btn btn-outline-info btn-lg px-4 me-sm-3 fw-bold" href="/">Create Project</a>
-          {{-- <button type="button" class="btn btn-outline-light btn-lg px-4">Secondary</button> --}}
-        </div>
+{{--          {{dd($project)}}--}}
+{{--        <p class="fs-5 mb-4">{{$project->company->name}}- {{$project->company->user->name}}</p>--}}
+{{--        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">--}}
+{{--          <a type="button" class="btn btn-outline-info btn-lg px-4 me-sm-3 fw-bold" href="/">Create Project</a>--}}
+{{--          --}}{{-- <button type="button" class="btn btn-outline-light btn-lg px-4">Secondary</button> --}}
+{{--        </div>--}}
       </div>
     </div>
 </div>
@@ -21,7 +22,7 @@
     <div class="col-md-8">
     {{-- @foreach ($project->projects as $project)
     <div class="col d-flex align-items-start" style="background: white; margin:1em; padding:1em">
-     
+
       <div>
         <h3 class="fs-2 text-body-emphasis">{{$project->name}}</h3>
         <p>{{$project->description}}</p>
@@ -31,29 +32,26 @@
       </div>
     </div>
     @endforeach --}}
+{{--    按照阶段来  1.申请 2.审核 3.开发 4.测试 5.发布 6.结束--}}
+        <div >
+            <h2>
+                申请阶段
+                <span class="fa fa-vote-yea" style="color: {{$project->apply_Form? 'greenyellow': 'red'}}; font-size: 1em"></span>
+            </h2>
+            @if($project->apply_form)
+                <img src="/storage/{{$project->apply_form->path}}">
 
-    {{-- add comments --}}
-  <form method="POST" action="{{route('comments.store')}}">
+            @endif
+        </div>
+    <form method="GET" action="{{route('projects.getBigPayForm', $project->id)}}">
+        <button type="submit" class="btn btn-primary mt-3">获取支付审核表</button>
+    </form>
 
-    {{csrf_field()}}
-      <input type="hidden" name="commentable_type" value="App\Models\Project">
-      <input type="hidden" name="commentable_id" value="{{$project->id}}">
-
-      <div class="mb-3">
-        <label for="exampleInputEmail1" class="form-label">Comment<span class="required">*</span></label>
-        
-        <textarea type="text" class="form-control" style="resize: vertical" rows="5" name="body"></textarea>
-        <div id="emailHelp" class="form-text">say anything you want about this project!</div>
-      </div>
-     
-
-      <button type="submit" class="btn btn-primary">Comment</button>
-  </form>
   {{-- show comments --}}
   {{-- @include('partials.comments') --}}
   </div>
 
-  
+
 
   <div class="col-md-4">
     <div class="position-sticky" style="top: 2rem;">
@@ -67,12 +65,12 @@
                 if(result){
                     event.preventDefault();
                     document.getElementById('delete-form').submit();
-                }">Delete</a>    
+                }">Delete</a>
             <form id="delete-form" action="{{route('projects.destroy', [$project->id])}}" method="POST" style="display: none">
             <input type="hidden" name="_method" value="delete">
             {{ csrf_field() }}
             </form>
-            
+
             </li>
             <li class="p-1"><a href="{{route('projects.index')}}">Back</a></li>
         </ul>
@@ -143,5 +141,5 @@
 
 
 
-  
+
 @endsection

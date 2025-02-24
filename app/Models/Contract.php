@@ -17,16 +17,18 @@ class Contract extends Model
         'paid_amount',
     ];
 
+    protected $with = ['payments'];
+
     public static function CreateOrUpdate(array $rowData)
     {
 
         $results = Parser::ParseArray($rowData, ["合同名称", "合同金额", "收取履约金", "已累计付款金额（第  次）"]);
         $contract = Contract::where('name', $results["合同名称"])->first();
 //        dd($contract);
-        if(!$contract->exists()){
+        if(!$contract){
             $contract = Contract::create([
                 'name' => $results["合同名称"],
-                'amount' => $results["合同金额"],
+                'amount' => doubleval($results["合同金额"]),
                 'fulfillmentDeposit' => doubleval($results["收取履约金"]),
                 'paid_amount' =>doubleval($results["已累计付款金额（第  次）"]) ,
             ]);

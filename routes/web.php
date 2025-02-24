@@ -17,24 +17,12 @@ use App\Events\OrderStatusUpdated;
 |
 */
 
-// class Order{
-//     public $id;
-//     public function __construct($id){
-//         $this->id = $id;
-//     }
-// }
-
-
 
 // Route::get('/', function () {
 //     // OrderStatusUpdated::dispatch(new Order(1));
 //     return view('welcome');
 // })->name('home');
 
-// Route::get('/update' , function(){
-//     OrderStatusUpdated::dispatch(new Order(5));
-//     return 'done';
-// });
 Route::get('/', function (){
     return 'index';
 });
@@ -42,6 +30,18 @@ Route::get('/', function (){
 Route::get('/testWord', [\App\Http\Controllers\WordController::class, 'getTestPage']);
 
 Route::post('testWord', [\App\Http\Controllers\WordController::class, 'test'])->name('upload.file');
+
+Route::get('/testWrite', [\App\Http\Controllers\WordController::class,'writeExcel']);
+
+Route::resource('apply_forms', \App\Http\Controllers\ApplyFormController::class);
+Route::resource('companies', \App\Http\Controllers\CompanyController::class);
+Route::resource('contracts', \App\Http\Controllers\ContractController::class);
+
+Route::resource('projects', \App\Http\Controllers\ProjectController::class);
+
+Route::get('BigPayForm/{project}', [\App\Http\Controllers\ProjectController::class, 'getBigPayForm'])->name('projects.getBigPayForm');
+
+Route::post('payment_invoice', [\App\Http\Controllers\PaymentController::class, 'updateInvoice']);
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -51,9 +51,7 @@ Route::get('/subscribe', function () {
 })->middleware(['auth', 'verified'])->name('subscribe');
 
 // // App::bind('App\Acme\Billing\BillingInterface', 'App\Acme\Billing\StripeBilling');
-// Route::get('buy', function(){
-//     return view('buy');
-// });
+
 
 // Route::post('buy', [\App\Http\Controllers\CompanyController::class, 'buy'])->name('buy');
 
@@ -100,6 +98,7 @@ Route::get('/subscribe', function () {
 Route::resource('companies', \App\Http\Controllers\CompanyController::class);
 Route::resource('roles', \App\Http\Controllers\RoleController::class);
 Route::resource('users', \App\Http\Controllers\UserController::class);
+Route::get('apply_userlist', [\App\Http\Controllers\UserController::class, 'apply_userlist']);
 Route::resource('tasks', \App\Http\Controllers\TaskController::class);
 Route::resource('projects', \App\Http\Controllers\ProjectController::class);
 Route::resource('comments', \App\Http\Controllers\CommentController::class);

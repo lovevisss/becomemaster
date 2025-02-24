@@ -10,6 +10,7 @@ class Company extends Model
 {
     use HasFactory;
     protected $guarded = [];
+    protected $with = ['user'];
 
     // user
     public static function CreateOrUpdate(array $rowData)
@@ -18,7 +19,7 @@ class Company extends Model
         $companyName = Parser::Parse($rowData, "收款单位");
 
         if ($companyName !== null) {
-            echo "收款单位后面的值是: " . $companyName;
+//            echo "收款单位后面的值是: " . $companyName;
             $existingCompany = Company::where('name', $companyName)->first();
             if(!$existingCompany){
                 $existingCompany =  Company::create([
@@ -34,7 +35,7 @@ class Company extends Model
 
     public function user()
     {
-        return $this->hasMany(User::class);
+        return $this->hasOne(User::class);
     }
 
     // projects

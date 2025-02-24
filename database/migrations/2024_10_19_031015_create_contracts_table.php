@@ -16,8 +16,9 @@ return new class extends Migration
             $table->string('name');
             $table->string('year')->nullable();
             $table->unique(['year', 'name']);
-            $table->double('amount');
-            $table->double('fulfillmentDeposit');
+            $table->string('path')->nullable();
+            $table->double('amount')->nullable();
+            $table->double('fulfillmentDeposit')->nullable();
             $table->double('paid_amount')->nullable();
             $table->unsignedInteger('project_id')->nullable();
 

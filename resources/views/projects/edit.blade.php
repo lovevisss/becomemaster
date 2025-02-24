@@ -6,6 +6,7 @@
       <h1 class="display-5 fw-bold text-white">{{$project->name}}</h1>
       <div class="col-lg-6 mx-auto">
         <p class="fs-5 mb-4">{{$project->description}}</p>
+{{--          <p class="fs-5 mb-4">{{$project->company->name}}- {{$project->company->user->name}}</p>--}}
         {{-- <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
           <button type="button" class="btn btn-outline-info btn-lg px-4 me-sm-3 fw-bold">Custom button</button>
           <button type="button" class="btn btn-outline-light btn-lg px-4">Secondary</button>
@@ -16,8 +17,29 @@
 
 {{-- projects --}}
 <div class="row g-4 py-5">
-
     <div class="col-md-8">
+{{--   申请--}}
+        <div>
+            <apply-file :project_id="{{$project->id}}" :file_name="{{$project->apply_form}}"></apply-file>
+        </div>
+{{--        签订合同--}}
+        <div>
+                <sign-contract :project_id="{{$project->id}}" :contracts="{{$project->contracts}}" ></sign-contract>
+        </div>
+
+        @if($project->contracts)
+{{--            {{dd($project->contracts)}}--}}
+        <div>
+            <h2 >开票阶段</h2>
+                @foreach($project->contracts as $contract)
+                    @foreach($contract->payments as $payment)
+
+                        <invoice :project_id="{{$project->id}}" :payment="{{$payment}}"></invoice>
+                    @endforeach
+                @endforeach
+        </div>
+        @endif
+
         <form method="POST" action="{{route('projects.update',[$project->id])}}">
             {{ csrf_field() }}
             {{ method_field('PUT') }}
@@ -30,7 +52,9 @@
               <label for="exampleInputPassword1" class="form-label">description</label>
               <textarea type="text" class="form-control" name="description"  style="resize: vertical" rows="5">{{$project->description}}</textarea>
             </div>
-     
+            <label for="" class="form-label" >项目时间：</label>
+            <input type="date" class="form-control" name="created_at" value="{{$project->created_at->format('Y-m-d')}}">
+
             <button type="submit" class="btn btn-primary">Update</button>
           </form>
   </div>
@@ -112,5 +136,5 @@
 
 
 
-  
+
 @endsection

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('reason');
             $table->double('amount');
+            $table->string('invoice')->nullable();
             $table->unsignedInteger('contract_id')->nullable();
             $table->unique(['amount', 'contract_id']);
 

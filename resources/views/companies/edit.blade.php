@@ -30,7 +30,16 @@
               <label for="exampleInputPassword1" class="form-label">description</label>
               <textarea type="text" class="form-control" name="description"  style="resize: vertical" rows="5">{{$company->description}}</textarea>
             </div>
-     
+{{--            user--}}
+            <div class="mb-3">
+                <label for="user_id" class="form-label">User</label>
+                <select name="user_id" class="form-select" aria-label="Default select example">
+                    @foreach($users as $user)
+                        <option value="{{$user->id}}" @if($user->id == $company->user_id) selected @endif>{{$user->name}}</option>
+                    @endforeach
+                </select>
+            </div>
+
             <button type="submit" class="btn btn-primary">Update</button>
           </form>
   </div>
@@ -112,5 +121,5 @@
 
 
 
-  
+
 @endsection

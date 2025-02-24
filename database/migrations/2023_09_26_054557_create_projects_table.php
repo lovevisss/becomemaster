@@ -14,13 +14,12 @@ return new class extends Migration
         Schema::create('projects', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->unsignedInteger('project_type_id');
-            $table->unsignedInteger('department_id');
+            $table->unsignedInteger('project_type_id')->nullable();
+            $table->unsignedInteger('department_id')->nullable();
+            $table->unsignedInteger('status_id')->nullable();
             $table->longText('description')->nullable();
              $table->integer('company_id')->unsigned()->nullable();
-            // $table->integer('user_id')->unsigned()->nullable();
             $table->integer('days')->unsigned()->nullable();
-            // $table->foreignId('user_id')->constrained();
             // $table->foreignId('company_id')->constrained();
             $table->timestamps();
         });

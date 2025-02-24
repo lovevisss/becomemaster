@@ -29,7 +29,12 @@
               <label for="description" class="form-label">description</label>
               <textarea type="text" class="form-control" name="description"  style="resize: vertical" rows="5"></textarea>
             </div>
-     
+            <div class="mb-3">
+              <label for="company" class="form-label">
+                  Company
+              </label>
+                <selector :model="'companies'"></selector>
+            </div>
             <button type="submit" class="btn btn-primary">Create</button>
           </form>
   </div>
@@ -110,5 +115,5 @@
 
 
 
-  
+
 @endsection

@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Contract;
+use App\Models\Status;
 use Illuminate\Http\Request;
 
-class ContractController extends Controller
+class StatusController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -28,13 +28,13 @@ class ContractController extends Controller
      */
     public function store(Request $request)
     {
-        return $request;
+        //
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Contract $contract)
+    public function show(Status $status)
     {
         //
     }
@@ -42,7 +42,7 @@ class ContractController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Contract $contract)
+    public function edit(Status $status)
     {
         //
     }
@@ -50,7 +50,7 @@ class ContractController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Contract $contract)
+    public function update(Request $request, Status $status)
     {
         //
     }
@@ -58,7 +58,7 @@ class ContractController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Contract $contract)
+    public function destroy(Status $status)
     {
         //
     }
