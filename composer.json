@@ -17,7 +17,8 @@
         "laravel/tinker": "^2.8",
         "laravelcollective/html": "^6.4",
         "phpoffice/phpword": "^1.3",
-        "pusher/pusher-php-server": "^7.2"
+        "pusher/pusher-php-server": "^7.2",
+        "ext-http": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
@@ -37,9 +38,11 @@
         },
         "files": [
 
-            "app/helpers.php"
+            "app/helpers.php",
+            "resources/views/auth/source/Config.php",
+            "resources/views/auth/source/com/supwisdom/institute/authx/demo/cas/common/utils/CasUtil.php"
         ]
-        
+
     },
     "autoload-dev": {
         "psr-4": {

@@ -13,6 +13,9 @@
         <link href="{{asset('fontawesome/css/fontawesome.css')}}" rel="stylesheet">
         <link href="{{asset('fontawesome/css/brands.css')}}" rel="stylesheet">
         <link href="{{asset('fontawesome/css/solid.css')}}" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.1.1/dist/css/tabler.min.css" />
+        <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.1.1/dist/js/tabler.min.js"></script>
+
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100 container col-md-9 col-md-offset-3" id="app">

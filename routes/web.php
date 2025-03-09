@@ -24,7 +24,19 @@ use App\Events\OrderStatusUpdated;
 // })->name('home');
 
 Route::get('/', function (){
+    dd($_REQUEST['ticket']);
+    $casServerHostUrl = CAS_SERVER_URL;
+    $service = APP_SERVER_URL;
+    $ticket = $_REQUEST['ticket'];
+    $casUser = CasUtil::serviceValidate($casServerHostUrl, $service, $ticket);
+    dd($casUser);
+    return $casUser;
+//    redirect()
     return 'index';
+});
+
+Route::get('/teststatus', function (){
+    return view('auth.source.index');
 });
 
 Route::get('/testWord', [\App\Http\Controllers\WordController::class, 'getTestPage']);

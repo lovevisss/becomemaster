@@ -18,19 +18,19 @@ class StatusSeeder extends Seeder
 
         ]);
         Status::create([
-            'name' => 'Approved',
+            'name' => '实施',
 
         ]);
         Status::create([
-            'name' => 'Rejected',
+            'name' => '结算',
 
         ]);
         Status::create([
-            'name' => '支付完成',
+            'name' => '完成',
 
         ]);
         Status::create([
-            'name' => 'Cancelled',
+            'name' => '已退质保金',
 
         ]);
     }
