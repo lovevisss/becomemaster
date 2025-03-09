@@ -18,12 +18,17 @@ return new class extends Migration
             $table->unique(['year', 'name']);  //合同年份和合同名称唯一 , 存在维保合同名称相同的情况
             $table->string('path')->nullable();
             $table->date('signing_date'); //签订日期
+            $table->unsignedInteger('user_id'); //签订人
             $table->double('amount'); //合同金额
             $table->unsignedInteger('company_id'); //公司
             $table->double('fulfillmentDeposit')->nullable(); //质保金
             $table->double('paid_amount')->nullable();
             $table->unsignedInteger('status_id')->default(0); //合同状态 2
-            $table->unsignedInteger('project_id')->nullable();
+            $table->unsignedInteger('funding_id')->nullable(); //经费来源
+            $table->unsignedInteger('contract_type_id')->nullable(); //合同类型
+            $table->unsignedInteger('project_type_id')->nullable(); //项目类别
+            $table->unsignedInteger('parent_id')->nullable(); //父合同
+            $table->unsignedInteger('project_id')->nullable(); //项目
 
 
             $table->timestamps();

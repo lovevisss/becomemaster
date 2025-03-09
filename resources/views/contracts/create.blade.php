@@ -37,6 +37,11 @@
                     <input type="date" class="form-control" id="signing_date" name="signing_date">
                 </div>
 
+                <div class="mb-3">
+                    <label for="user_id" class="form-label">签订人</label>
+                    <input type="date" class="form-control" id="user_id" name="user_id">
+                </div>
+
                 <button type="submit" class="btn btn-primary">Create</button>
             </form>
         </div>
