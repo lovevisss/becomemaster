@@ -38,3 +38,6 @@ Route::post('/projects/{project}/tasks', function (Project $project) {
     event(new TaskCreated($task));
     return $task;
 });
+
+Route::get('/company', [\App\Http\Controllers\CompanyController::class,'searchByName']);
+Route::post('/users', [\App\Http\Controllers\UserController::class,'store']);

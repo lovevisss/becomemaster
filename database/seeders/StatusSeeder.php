@@ -26,11 +26,11 @@ class StatusSeeder extends Seeder
 
         ]);
         Status::create([
-            'name' => '完成',
+            'name' => '待退质保金',
 
         ]);
         Status::create([
-            'name' => '已退质保金',
+            'name' => '完成',
 
         ]);
     }

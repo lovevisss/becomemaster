@@ -2,8 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Company;
 use App\Models\Contract;
+use App\Models\ContractType;
+use App\Models\Funding;
+use App\Models\ProjectType;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ContractController extends Controller
 {
@@ -20,7 +26,9 @@ class ContractController extends Controller
      */
     public function create()
     {
-        return view('contracts.create');
+        $companies = Company::all();
+        $users = User::all();
+        return view('contracts.create',compact('companies', 'users'));
     }
 
     /**
@@ -28,7 +36,20 @@ class ContractController extends Controller
      */
     public function store(Request $request)
     {
-        return $request;
+//        return $request->get('name');
+//        save file and save path to database rename with timestamp
+        $file = $request->file('path');
+
+        $path = $file->store('public/contracts');
+//      $path  去掉public/
+        $path = str_replace('public/', '', $path);
+//        dd($path);
+//        $request->merge(['path' => $path]);
+//        dd($request);
+        $contract = Contract::create($request->all());
+        $contract->path = $path;
+        $contract->save();
+        return $contract;
     }
 
     /**
@@ -36,7 +57,7 @@ class ContractController extends Controller
      */
     public function show(Contract $contract)
     {
-        //
+        return view('contracts.show', compact('contract'));
     }
 
     /**
@@ -44,7 +65,9 @@ class ContractController extends Controller
      */
     public function edit(Contract $contract)
     {
-        //
+        $users = User::all();
+        $companies = Company::all();
+        return view('contracts.edit', compact('contract','users', 'companies'));
     }
 
     /**
@@ -52,7 +75,32 @@ class ContractController extends Controller
      */
     public function update(Request $request, Contract $contract)
     {
-        //
+//        如果有文件 则更新
+//        dd($request);
+//        dd('update');
+        $contract->fill($request->all());
+        $file = $request->file('path');
+        if($file){
+            $path = $file->store('public/contracts');
+            $path = str_replace('public/', '', $path);
+            $contract->path = $path;
+
+        }
+        $consult = $request->file('consult');
+        if($consult){
+//            dd($consult);
+            $consultPath = $consult->store('public/contracts');
+            $consultPath = str_replace('public/', '', $consultPath);
+            $contract->consult = $consultPath;
+        }
+
+        $acceptance = $request->file('acceptance');
+        if($acceptance){
+            $acceptancePath = $acceptance->store('public/contracts');
+            $acceptancePath = str_replace('public/', '', $acceptancePath);
+            $contract->acceptance = $acceptancePath;
+        }
+        $contract->save();
     }
 
     /**

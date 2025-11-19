@@ -17,7 +17,7 @@
 {{-- projects --}}
 <div class="row g-4 py-5">
 
-    <div class="col-md-8">
+    <div class="col-md-12">
         <form method="POST" action="{{route('projects.store')}}">
             {{ csrf_field() }}
             <div class="mb-3">

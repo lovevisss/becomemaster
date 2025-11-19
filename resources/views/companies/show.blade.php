@@ -21,7 +21,7 @@
     <div class="col-md-8">
     @foreach ($company->projects as $project)
     <div class="col d-flex align-items-start" style="background: white; margin:1em; padding:1em">
-     
+
       <div>
         <h3 class="fs-2 text-body-emphasis">{{$project->name}}</h3>
         <p>{{$project->description}}</p>
@@ -40,21 +40,21 @@
       <div class="p-4 mb-3 bg-body-tertiary rounded">
         <h4 class="fst-italic">Actions</h4>
         <ul class="p-4">
-            <li class="p-1"><a href="/companies/{{$company->id}}/edit">Edit</a></li>
+            <li class="p-1"><a href="/company/{{$company->id}}/edit">Edit</a></li>
             <li class="p-1">
             <a href="#" onclick="
                 var result= confirm('Are you sure to delete this company!');
                 if(result){
                     event.preventDefault();
                     document.getElementById('delete-form').submit();
-                }">Delete</a>    
-            <form id="delete-form" action="{{route('companies.destroy', [$company->id])}}" method="POST" style="display: none">
+                }">Delete</a>
+            <form id="delete-form" action="{{route('company.destroy', [$company->id])}}" method="POST" style="display: none">
             <input type="hidden" name="_method" value="delete">
             {{ csrf_field() }}
             </form>
-            
+
             </li>
-            <li class="p-1"><a href="{{route('companies.index')}}">Back</a></li>
+            <li class="p-1"><a href="{{route('company.index')}}">Back</a></li>
         </ul>
        </div>
 
@@ -123,5 +123,5 @@
 
 
 
-  
+
 @endsection

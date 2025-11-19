@@ -13,8 +13,8 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.1.1/dist/css/tabler.min.css" />
-        <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.1.1/dist/js/tabler.min.js"></script>
+        <link rel="stylesheet"  href="{{asset('css/tabler.min.css')}}">
+        <script src="{{asset('js/tabler.min.js')}}"></script>
 
         <script>
             window.App = <?= json_encode([
@@ -38,9 +38,10 @@
             @endif
 
             <!-- Page Content   -->
-            <main>
+            <div id="app">
                @yield('content')
-            </main>
+            </div>
         </div>
     </body>
+
 </html>

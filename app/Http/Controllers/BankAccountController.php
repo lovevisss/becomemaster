@@ -20,7 +20,7 @@ class BankAccountController extends Controller
      */
     public function create()
     {
-        //
+        return view('bank-accounts.create');
     }
 
     /**
@@ -28,7 +28,11 @@ class BankAccountController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+        BankAccount::create($request->except('_token'));
+
+        return redirect()->route('projects.index')
+            ->with('success', 'Bank Account created successfully.');
     }
 
     /**

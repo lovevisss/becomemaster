@@ -16,24 +16,7 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
     public $table = 'users';
 
-    public $fillable = [
-        'name',
-        'email',
-        'phone',
-        'email_verified_at',
-        'password',
-        'role_id',
-        'company_id',
-        'first_name',
-        'last_name',
-        'city',
-        'billing_id',
-        'remember_token',
-        'stripe_id',
-        'pm_type',
-        'pm_last_four',
-        'trial_ends_at'
-    ];
+    public $guarded = [];
 
     protected $casts = [
         'name' => 'string',

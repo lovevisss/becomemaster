@@ -8,12 +8,13 @@ export default defineConfig({
             host: '10.1.16.209', // your ip
             overlay: false,
         },
+
     },
     plugins: [
         laravel({
             input: [
                 'resources/css/app.css',
-                'resources/css/offcanvas-navbar.css',
+                // 'resources/css/offcanvas-navbar.css',
                 'resources/js/*.js',
                 'resources/js/app.js',
                 'resources/scss/style.scss'
@@ -61,7 +62,7 @@ handleHotUpdate({ file, server }) {
     },
     resolve: {
         alias: {
-            // '@/resources/svg': path.resolve(__dirname, '/resources/assets/svg'),
+            // '@/resources/svg': path.resolve(__dirname, '/resources1/assets/svg'),
             'vue': 'vue/dist/vue.esm-bundler.js',
         },
         optimizeDeps: {

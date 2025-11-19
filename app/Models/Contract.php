@@ -10,14 +10,9 @@ class Contract extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'name',
-        'amount',
-        'fulfillmentDeposit',
-        'paid_amount',
-    ];
+    protected $guarded = [];
 
-    protected $with = ['payments'];
+//    protected $with = ['payments'];
 
     public static function CreateOrUpdate(array $rowData)
     {
@@ -44,5 +39,41 @@ class Contract extends Model
     public function payments()
     {
         return $this->hasMany(Payment::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
+
+    public function isPayed()
+    {
+        return $this->amount == $this->paid_amount?"已付清":"未付清";
+    }
+
+    public function status()
+    {
+        return $this->belongsTo(Status::class);
+    }
+
+    public function funding()
+    {
+        return $this->belongsTo(Funding::class);
+    }
+
+
+    public function contract_type()
+    {
+        return $this->belongsTo(ContractType::class);
+    }
+
+    public function project_type()
+    {
+        return $this->belongsTo(ProjectType::class);
     }
 }

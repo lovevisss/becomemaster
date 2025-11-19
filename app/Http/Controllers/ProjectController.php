@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Contract;
 use App\Models\Project;
 use Illuminate\Http\Request;
 use PhpOffice\PhpWord\Element\Table;
@@ -21,8 +22,9 @@ class ProjectController extends Controller
     public function index(Request $request)
     {
 //        dd($request);
-        $projects = Project::all();
-        return view('projects.index', compact('projects'));
+//        $projects = Project::all();
+        $contracts = Contract::orderBy('signing_date')->get();
+        return view('projects.index', compact('contracts'));
     }
 
     /**

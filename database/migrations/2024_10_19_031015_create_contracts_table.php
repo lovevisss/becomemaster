@@ -23,7 +23,7 @@ return new class extends Migration
             $table->unsignedInteger('company_id'); //公司
             $table->double('fulfillmentDeposit')->nullable(); //质保金
             $table->double('paid_amount')->nullable();
-            $table->unsignedInteger('status_id')->default(0); //合同状态 2
+            $table->unsignedInteger('status_id')->default(1); //合同状态  1:未开始 2:执行中 3:已完成 4:已终止
             $table->unsignedInteger('funding_id')->nullable(); //经费来源
             $table->unsignedInteger('contract_type_id')->nullable(); //合同类型
             $table->unsignedInteger('project_type_id')->nullable(); //项目类别

@@ -8,7 +8,7 @@ use App\Http\Controllers\AppBaseController;
 use App\Models\User;
 use App\Repositories\UserRepository;
 use Illuminate\Http\Request;
-use Flash;
+use Laracasts\Flash\Flash;
 
 class UserController extends AppBaseController
 {
@@ -26,7 +26,9 @@ class UserController extends AppBaseController
     public function index(Request $request)
     {
         $users = $this->userRepository->paginate(10);
-
+        if($request->wantsJson()){
+            return User::all();
+        }
         return view('users.index')
             ->with('users', $users);
     }
@@ -42,15 +44,20 @@ class UserController extends AppBaseController
     /**
      * Store a newly created User in storage.
      */
-    public function store(CreateUserRequest $request)
+    public function store(Request $request)
     {
         $input = $request->all();
-
+//        dd($input);
         $user = $this->userRepository->create($input);
 
         Flash::success('User saved successfully.');
+        if($request->wantsJson()){
+            return response()->json($user);
+        }else{
 
-        return redirect(route('users.index'));
+            return redirect(route('users.index'));
+        }
+
     }
 
     /**

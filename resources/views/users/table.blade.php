@@ -11,14 +11,6 @@
                 <th>Company Id</th>
                 <th>First Name</th>
                 <th>Last Name</th>
-                <th>City</th>
-                <th>Billing Id</th>
-                <th>Remember Token</th>
-                <th>Stripe Id</th>
-                <th>Pm Type</th>
-                <th>Pm Last Four</th>
-                <th>Trial Ends At</th>
-                <th colspan="3">Action</th>
             </tr>
             </thead>
             <tbody>
@@ -32,13 +24,6 @@
                     <td>{{ $user->company_id }}</td>
                     <td>{{ $user->first_name }}</td>
                     <td>{{ $user->last_name }}</td>
-                    <td>{{ $user->city }}</td>
-                    <td>{{ $user->billing_id }}</td>
-                    <td>{{ $user->remember_token }}</td>
-                    <td>{{ $user->stripe_id }}</td>
-                    <td>{{ $user->pm_type }}</td>
-                    <td>{{ $user->pm_last_four }}</td>
-                    <td>{{ $user->trial_ends_at }}</td>
                     <td  style="width: 120px">
                         {!! Form::open(['route' => ['users.destroy', $user->id], 'method' => 'delete']) !!}
                         <div class='btn-group'>

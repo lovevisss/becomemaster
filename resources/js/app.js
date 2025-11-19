@@ -12,6 +12,9 @@ import Invoice from "./components/Invoice.vue";
 import SignContract from "./components/SignContract.vue";
 import Selector from "./components/Selector.vue";
 import SingleApplyFile from "./components/SingleApplyFile.vue"
+import CreateUser from "./components/CreateUser.vue";
+import Contract from "./components/Contract.vue";
+import NotifyPaper from "./components/NotifyPaper.vue";
 import 'izitoast/dist/js/iziToast.min.js';
 // import vue from '@vitejs/plugin-vue';
 // window.Vue = vue;
@@ -29,5 +32,8 @@ app.component('invoice', Invoice);
 app.component('sign-contract', SignContract);
 app.component('selector', Selector);
 app.component('single-apply-file', SingleApplyFile);
+app.component('create-user', CreateUser);
+app.component('contract', Contract);
+app.component('notify-paper', NotifyPaper);
 
 app.mount('#app');

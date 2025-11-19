@@ -14,7 +14,7 @@ class CompanyController extends Controller
     // user need to login to access this controller
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware('auth')->except('searchByName');
     }
     /**
      * Display a listing of the resource.
@@ -52,7 +52,7 @@ class CompanyController extends Controller
 
         // with message success
         session()->flash('message', 'Company created successfully');
-        return redirect()->route('companies.show', $company->id);
+        return redirect()->route('company.show', $company->id);
     }
 
     /**
@@ -83,6 +83,7 @@ class CompanyController extends Controller
         $company->update([
             'name' => $request->name,
             'description' => $request->description,
+            'address' => $request->address
         ]);
 
         $user = User::find($request->user_id);
@@ -127,5 +128,21 @@ class CompanyController extends Controller
         }
         // dd($request->all());
 
+    }
+
+    public function searchByName(Request $request)
+    {
+        $name = $request->input('name');
+
+        $companies = Company::where('name', 'like', '%'.$name.'%')->get();
+        return $this->getJsonResponse($companies);
+
+    }
+
+    public function getJsonResponse($model)
+    {
+        $res = response()->json($model);
+        $res->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+        return $res;
     }
 }

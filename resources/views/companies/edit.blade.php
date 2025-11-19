@@ -22,10 +22,15 @@
             {{ csrf_field() }}
             {{ method_field('PUT') }}
             <div class="mb-3">
-              <label for="exampleInputEmail1" class="form-label">Name<span class="required">*</span></label>
+              <label for="exampleInputEmail1" class="form-label">名字<span class="required">*</span></label>
               <input type="text" class="form-control" required id="exampleInputEmail1" placeholder="Enter Company Name" name="name" value="{{$company->name}}">
               <div id="emailHelp" class="form-text">We'll never share your name with anyone else.</div>
             </div>
+            <div class="mb-3">
+                <label for="address" class="form-label">地址</label>
+                <input type="text" class="form-control" id="address" placeholder="Enter Company Address" name="address" value="{{$company->address}}">
+            </div>
+
             <div class="mb-3">
               <label for="exampleInputPassword1" class="form-label">description</label>
               <textarea type="text" class="form-control" name="description"  style="resize: vertical" rows="5">{{$company->description}}</textarea>

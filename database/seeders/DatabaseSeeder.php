@@ -18,13 +18,16 @@ class DatabaseSeeder extends Seeder
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',
         // ]);
-        $this->call('\Database\Seeders\UserTableSeeder');
         $this->call('\Database\Seeders\DepartmentSeeder');
         $this->call('\Database\Seeders\RoleSeeder');
         $this->call('\Database\Seeders\ProjectTypeSeeder');
         $this->call('\Database\Seeders\StatusSeeder');
-        $this->call('\Database\Seeders\CompanySeeder');
-        $this->call('\Database\Seeders\ContractSeeder');
+        $this->call('\Database\Seeders\ContractTypeSeeder');
+        $this->call('\Database\Seeders\FundingsSeeder');
+
+//        $this->call('\Database\Seeders\CompanySeeder');
+//        $this->call('\Database\Seeders\UserTableSeeder');
+//        $this->call('\Database\Seeders\ContractSeeder');
         // $this->call('RoleTableSeeder');
     }
 }

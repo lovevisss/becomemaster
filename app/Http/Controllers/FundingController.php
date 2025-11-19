@@ -10,9 +10,11 @@ class FundingController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        if($request->wantsJson()){
+            return Funding::all();
+        }
     }
 
     /**

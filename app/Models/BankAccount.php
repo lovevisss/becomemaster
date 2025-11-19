@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class BankAccount extends Model
 {
     use HasFactory;
+    protected $guarded = [];
 
     public static function CreateOrUpdate(array $rowData)
     {
