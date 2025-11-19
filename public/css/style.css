@@ -1,0 +1,30 @@
+html, body{
+    height: 100%;
+}
+
+body{
+    display:flex ;
+    align-items: center;
+    justify-content: center;
+    background: #00b1b3;
+    font-size: 16px;
+    margin: 0;
+    font-family: sans-serif;
+}
+
+nav{
+    background: #f9f9f9;
+    width: 100%;
+}
+
+nav > ul{
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: space-around;
+    list-style: none;
+}
+
+.nav-item{
+    padding: 3em;
+}

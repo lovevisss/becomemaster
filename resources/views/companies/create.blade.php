@@ -18,18 +18,28 @@
 <div class="row g-4 py-5">
 
     <div class="col-md-8">
-        <form method="POST" action="{{route('companies.store')}}">
+        <form method="POST" action="{{route('company.store')}}">
             {{ csrf_field() }}
             <div class="mb-3">
-              <label for="exampleInputEmail1" class="form-label">Name<span class="required">*</span></label>
+              <label for="exampleInputEmail1" class="form-label">公司名<span class="required">*</span></label>
               <input type="text" class="form-control" required id="exampleInputEmail1" placeholder="Enter Company Name" name="name" >
               <div id="emailHelp" class="form-text">We'll never share your name with anyone else.</div>
             </div>
+{{--            taxid--}}
             <div class="mb-3">
-              <label for="description" class="form-label">description</label>
-              <textarea type="text" class="form-control" name="description"  style="resize: vertical" rows="5"></textarea>
+                <label for="tax_id" class="form-label">税号</label>
+                <input type="text" class="form-control" id="exampleInputEmail1" placeholder="税号" name="tax_id" >
             </div>
-     
+{{--            地址--}}
+            <div class="mb-4">
+                <label for="address" class="form-label">地址</label>
+                <input type="text" class="form-control" id="exampleInputEmail1" placeholder="地址" name="address" >
+            </div>
+{{--            电话--}}
+            <div class="mb-4">
+                <label for="phone" class="form-label">电话</label>
+                <input type="text" class="form-control" id="exampleInputEmail1" placeholder="电话" name="phone" >
+            </div>
             <button type="submit" class="btn btn-primary">Create</button>
           </form>
   </div>
@@ -110,5 +120,5 @@
 
 
 
-  
+
 @endsection
