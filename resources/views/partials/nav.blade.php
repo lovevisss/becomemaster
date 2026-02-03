@@ -18,8 +18,8 @@
             </span>公司</a>
             </li>
             <li class="nav-item">
-            <a class="nav-link" href="{{route('projects.index')}}"><span style="font-size: 1em; color: Orange;">
-                  <i class="fa-solid fa-file mr-1"></i></span>项目列表 </a>
+            <a class="nav-link" href="{{route('bank_account.create')}}"><span style="font-size: 1em; color: Orange;">
+                  <i class="fa-solid fa-file mr-1"></i></span>添加银行账户 </a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="{{route('users.index')}}"><span style="font-size: 1em; color: Orange;">

@@ -97,7 +97,7 @@ export default {
                     .then(response => {
                         console.log(response.data)
                         //     重定向到contract
-                        window.location.href = '/projects'; // 不推荐，仅作为临时解决方案
+                        window.location.href = '/notify_papers'; // 不推荐，仅作为临时解决方案
                     })
                     .catch(error => {
                         console.log(error)
@@ -107,7 +107,7 @@ export default {
                     .then(response => {
                         console.log(response.data)
                         //     重定向到contract
-                        // window.location.href = '/projects'; // 不推荐，仅作为临时解决方案
+                        window.location.href = '/notify_papers'; // 不推荐，仅作为临时解决方案
                     })
                     .catch(error => {
                         console.log(error)
