@@ -52,6 +52,20 @@
                         </svg>
                         添加项目
                     </a>
+                    <a href="{{ route('bank_accounts.index') }}" class="btn btn-outline-primary ms-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-building-bank" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                            <path d="M3 21l18 0"></path>
+                            <path d="M3 10l18 0"></path>
+                            <path d="M5 6l7 -3l7 3"></path>
+                            <path d="M4 10l0 11"></path>
+                            <path d="M20 10l0 11"></path>
+                            <path d="M8 14l0 3"></path>
+                            <path d="M12 14l0 3"></path>
+                            <path d="M16 14l0 3"></path>
+                        </svg>
+                        银行账户管理
+                    </a>
                 </div>
             </div>
         </div>
@@ -67,7 +81,7 @@
                 <th>公司名称</th>
                 <th>合同金额</th>
                 <th>当前状态</th>
-                <th class="w-1"></th>
+                <th class="w-1">操作</th>
             </tr>
             </thead>
             <tbody>
@@ -93,8 +107,12 @@
                     <td class="text-secondary">
                         {{$contract->status->name}}
                     </td>
-                    <td>
-                        <a href="{{route('contract.edit', $contract->id)}}">Edit</a>
+                    <td class="text-nowrap">
+                        <a href="{{ route('contract.edit', $contract->id) }}">Edit</a>
+                        @if($contract)
+                            <span class="mx-1">|</span>
+                            <a href="{{ route('contract.show', $contract->id) }}">查看项目</a>
+                        @endif
                     </td>
                 </tr>
 
@@ -113,4 +131,3 @@
   </main>
 
 @endsection
-

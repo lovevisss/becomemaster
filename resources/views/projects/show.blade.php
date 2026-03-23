@@ -33,10 +33,46 @@
     </div>
     @endforeach --}}
 {{--    按照阶段来  1.申请 2.审核 3.开发 4.测试 5.发布 6.结束--}}
+        <div class="card mb-4">
+            <div class="card-header">
+                项目基本信息
+            </div>
+            <div class="card-body">
+                <div class="row mb-2">
+                    <div class="col-sm-4 text-muted">项目名称</div>
+                    <div class="col-sm-8">{{ $project->name ?? '-' }}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-sm-4 text-muted">所属公司</div>
+                    <div class="col-sm-8">{{ optional($project->company)->name ?? '-' }}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-sm-4 text-muted">计划天数</div>
+                    <div class="col-sm-8">{{ $project->days ? $project->days . ' 天' : '-' }}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-sm-4 text-muted">状态ID</div>
+                    <div class="col-sm-8">{{ $project->status_id ?? '-' }}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-sm-4 text-muted">创建时间</div>
+                    <div class="col-sm-8">{{ optional($project->created_at)->format('Y-m-d H:i') ?? '-' }}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-sm-4 text-muted">任务数量</div>
+                    <div class="col-sm-8">{{ $project->tasks->count() }}</div>
+                </div>
+                <div class="row mb-0">
+                    <div class="col-sm-4 text-muted">项目说明</div>
+                    <div class="col-sm-8">{{ $project->description ?: '-' }}</div>
+                </div>
+            </div>
+        </div>
+
         <div >
             <h2>
                 申请阶段
-                <span class="fa fa-vote-yea" style="color: {{$project->apply_Form? 'greenyellow': 'red'}}; font-size: 1em"></span>
+                <span class="fa fa-vote-yea" style="color: {{ $project->apply_forms->isNotEmpty() ? 'greenyellow' : 'red' }}; font-size: 1em"></span>
             </h2>
             @if($project->apply_forms)
                 @foreach($project->apply_forms as $form)

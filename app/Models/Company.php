@@ -49,9 +49,15 @@ class Company extends Model
         return $this->morphMany(Comment::class, 'commentable')->latest();
     }
 
+    public function bankAccounts()
+    {
+        return $this->hasMany(BankAccount::class);
+    }
+
     public function bankAccount()
     {
-        return $this->hasOne(BankAccount::class);
+        // Backward-compatible alias used by older code.
+        return $this->hasMany(BankAccount::class);
     }
 
 

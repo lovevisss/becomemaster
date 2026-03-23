@@ -12,7 +12,7 @@ class BankAccountController extends Controller
      */
     public function index()
     {
-        //
+        return view('bank-accounts.index');
     }
 
     /**
@@ -28,8 +28,18 @@ class BankAccountController extends Controller
      */
     public function store(Request $request)
     {
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'number' => ['required', 'string', 'max:255'],
+            'company_id' => ['nullable', 'integer', 'exists:companies,id'],
+        ]);
 
-        BankAccount::create($request->except('_token'));
+        $bankAccount = BankAccount::create($data);
+
+        if (!empty($bankAccount->company_id)) {
+            return redirect()->route('company.show', $bankAccount->company_id)
+                ->with('success', 'Bank Account created successfully.');
+        }
 
         return redirect()->route('projects.index')
             ->with('success', 'Bank Account created successfully.');
