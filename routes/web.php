@@ -1,8 +1,6 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-use App\Models\User;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 use Illuminate\Http\Request;
@@ -25,19 +23,7 @@ use App\Events\OrderStatusUpdated;
 //     return view('welcome');
 // })->name('home');
 
-Auth::login(User::find(1));
-
-Route::get('/', function (){
-    dd($_REQUEST['ticket']);
-    $casServerHostUrl = CAS_SERVER_URL;
-    $service = APP_SERVER_URL;
-    $ticket = $_REQUEST['ticket'];
-    $casUser = CasUtil::serviceValidate($casServerHostUrl, $service, $ticket);
-    dd($casUser);
-    return $casUser;
-//    redirect()
-    return 'index';
-});
+Route::redirect('/', '/projects');
 
 Route::get('/teststatus', function (){
     return view('auth.source.index');

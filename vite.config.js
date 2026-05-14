@@ -14,10 +14,10 @@ export default defineConfig({
         laravel({
             input: [
                 'resources/css/app.css',
-                // 'resources/css/offcanvas-navbar.css',
-                'resources/js/*.js',
+                'resources/css/offcanvas-navbar.css',
+                'resources/css/adapt.css',
                 'resources/js/app.js',
-                'resources/scss/style.scss'
+                'resources/sass/style.scss'
             ],
             refresh: true,
         }),
@@ -54,11 +54,8 @@ handleHotUpdate({ file, server }) {
     // },
     build: {
         manifest: true,
-        outDir: 'public/javascript',
+        outDir: 'public/build',
         emptyOutDir: true,
-        rollupOptions: {
-            input: 'resources/js/app.js',
-        },
     },
     resolve: {
         alias: {
