@@ -13,14 +13,11 @@
             </span>主页</a>
             </li>
             <li class="nav-item">
-            <a class="nav-link" href="{{route('company.index')}}"><span style="font-size: 1em; color: Orange;">
+            <a class="nav-link" href="{{route('companies.index')}}"><span style="font-size: 1em; color: Orange;">
             <i class="fa-solid fa-building mr-1"></i>
             </span>公司</a>
             </li>
-            <li class="nav-item">
-            <a class="nav-link" href="{{route('bank_account.create')}}"><span style="font-size: 1em; color: Orange;">
-                  <i class="fa-solid fa-file mr-1"></i></span>添加银行账户 </a>
-            </li>
+
             <li class="nav-item">
               <a class="nav-link" href="{{route('users.index')}}"><span style="font-size: 1em; color: Orange;">
                   <i class="fa-solid fa-icons mr-1"></i></span>公司负责人</a>

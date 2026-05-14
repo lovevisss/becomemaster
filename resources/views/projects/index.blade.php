@@ -10,29 +10,6 @@
             </div>
             <div class="col-auto ms-auto d-print-none">
                 <div class="d-flex">
-                    <div class="me-3 d-none d-md-block">
-                        <div class="input-icon">
-                            <input type="text" class="form-control" placeholder="Search…" />
-                            <span class="input-icon-addon">
-              <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="icon icon-tabler icon-tabler-search"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  stroke-width="2"
-                  stroke="currentColor"
-                  fill="none"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-              >
-                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
-                <path d="M21 21l-6 -6"></path>
-              </svg>
-            </span>
-                        </div>
-                    </div>
                     <a href="/contract/create" class="btn btn-primary">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -70,6 +47,40 @@
             </div>
         </div>
     </div>
+
+    <div class="card mt-3">
+        <div class="card-body">
+            <form method="GET" action="{{ route('projects.index') }}" class="row g-2 align-items-end">
+                <div class="col-md-4">
+                    <label for="project_type_id" class="form-label">项目类型</label>
+                    <select id="project_type_id" name="project_type_id" class="form-select">
+                        <option value="">全部项目类型</option>
+                        @foreach(($projectTypes ?? collect()) as $type)
+                            <option value="{{ $type->id }}" {{ (string)($projectTypeId ?? '') === (string)$type->id ? 'selected' : '' }}>
+                                {{ $type->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="company_name" class="form-label">公司名称</label>
+                    <input
+                        id="company_name"
+                        name="company_name"
+                        type="text"
+                        class="form-control"
+                        placeholder="输入公司名称关键词"
+                        value="{{ $companyName ?? '' }}"
+                    >
+                </div>
+                <div class="col-md-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-outline-primary">筛选</button>
+                    <a href="{{ route('projects.index') }}" class="btn btn-outline-secondary">重置</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div class="table-responsive mt-3 card mb-4">
         <table class="table table-vcenter ">
             <thead>
@@ -100,12 +111,12 @@
                 <tr>
                     <td>{{$contract->name}}</td>
                     <td class="text-secondary">{{$contract->signing_date}}</td>
-                    <td class="text-secondary">{{$contract->contract_type->name}}</td>
-                    <td class="text-secondary">{{$contract->project_type->name}}</td>
-                    <td class="text-secondary">{{$contract->company->name}}</td>
+                    <td class="text-secondary">{{ optional($contract->contract_type)->name ?? '-' }}</td>
+                    <td class="text-secondary">{{ optional($contract->project_type)->name ?? '-' }}</td>
+                    <td class="text-secondary">{{ optional($contract->company)->name ?? '-' }}</td>
                     <td class="text-secondary"><i class="fa-solid fa-rmb"></i>{{$contract->amount}}</td>
                     <td class="text-secondary">
-                        {{$contract->status->name}}
+                        {{ optional($contract->status)->name ?? '-' }}
                     </td>
                     <td class="text-nowrap">
                         <a href="{{ route('contract.edit', $contract->id) }}">Edit</a>

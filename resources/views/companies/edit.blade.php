@@ -1,130 +1,149 @@
 @extends('layouts.main')
 
 @section("content")
-<div class="bg-dark text-secondary px-4 py-5 text-center">
-    <div class="py-5">
-      <h1 class="display-5 fw-bold text-white">{{$company->name}}</h1>
-      <div class="col-lg-6 mx-auto">
-        <p class="fs-5 mb-4">{{$company->description}}</p>
-        {{-- <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-          <button type="button" class="btn btn-outline-info btn-lg px-4 me-sm-3 fw-bold">Custom button</button>
-          <button type="button" class="btn btn-outline-light btn-lg px-4">Secondary</button>
-        </div> --}}
-      </div>
+    @php
+        $currentResponsibleUserId = old('user_id', optional($company->user)->id);
+        $selectedResponsibleUser = $users->firstWhere('id', (int) $currentResponsibleUserId);
+        $responsibleUserName = old('responsible_user_name', optional($selectedResponsibleUser)->name);
+    @endphp
+
+    <div class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-4 py-8 text-center">
+        <div class="container mx-auto max-w-4xl">
+            <h1 class="display-5 fw fw-bold text-white mb-3">编辑公司信息</h1>
+            <p class="fs-5 opacity-90 max-w-2xl mx-auto">更新公司资料及负责人信息</p>
+        </div>
     </div>
-</div>
 
-{{-- projects --}}
-<div class="row g-4 py-5">
+    <div class="container mx-auto max-w-6xl py-8 px-4">
+        <div class="row gap-8">
+            <div class="col-md-8">
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 transition-all duration-300 hover:shadow-md">
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
 
-    <div class="col-md-8">
-        <form method="POST" action="{{route('companies.update',[$company->id])}}">
-            {{ csrf_field() }}
-            {{ method_field('PUT') }}
-            <div class="mb-3">
-              <label for="exampleInputEmail1" class="form-label">名字<span class="required">*</span></label>
-              <input type="text" class="form-control" required id="exampleInputEmail1" placeholder="Enter Company Name" name="name" value="{{$company->name}}">
-              <div id="emailHelp" class="form-text">We'll never share your name with anyone else.</div>
+                    <form method="POST" action="{{ route('companies.update', [$company->id]) }}" class="space-y-5">
+                        @csrf
+                        @method('PUT')
+
+                        <div class="form-group">
+                            <label for="name" class="form-label fw-medium mb-2 d-block">公司名 <span class="text-red-500 required">*</span></label>
+                            <input type="text" class="form-control w-full px-4 py-2 border border-gray-300 rounded-lg" id="name" name="name" value="{{ old('name', $company->name) }}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="tax_id" class="form-label fw-medium mb-2 d-block">税号</label>
+                            <input type="text" class="form-control w-full px-4 py-2 border border-gray-300 rounded-lg" id="tax_id" name="tax_id" value="{{ old('tax_id', $company->tax_id) }}">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="address" class="form-label fw-medium mb-2 d-block">地址</label>
+                            <input type="text" class="form-control w-full px-4 py-2 border border-gray-300 rounded-lg" id="address" name="address" value="{{ old('address', $company->address) }}">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="telephone" class="form-label fw-medium mb-2 d-block">电话</label>
+                            <input type="text" class="form-control w-full px-4 py-2 border border-gray-300 rounded-lg" id="telephone" name="telephone" value="{{ old('telephone', $company->telephone) }}">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="description" class="form-label fw-medium mb-2 d-block">公司描述</label>
+                            <textarea class="form-control w-full px-4 py-2 border border-gray-300 rounded-lg" id="description" name="description" rows="4">{{ old('description', $company->description) }}</textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="responsible_user_name" class="form-label fw-medium mb-2 d-block">负责人</label>
+                            <input type="hidden" id="user_id" name="user_id" value="{{ $currentResponsibleUserId }}">
+                            <input
+                                type="text"
+                                id="responsible_user_name"
+                                name="responsible_user_name"
+                                class="form-control"
+                                list="responsible-user-options"
+                                placeholder="可选择已有负责人，也可直接输入新姓名"
+                                value="{{ $responsibleUserName }}"
+                                autocomplete="off"
+                            >
+                            <datalist id="responsible-user-options">
+                                @foreach($users as $user)
+                                    <option value="{{ $user->name }}"></option>
+                                @endforeach
+                            </datalist>
+                            <div id="responsible-user-hint" class="form-text text-gray-500 mt-1 text-sm">
+                                输入已有姓名会自动匹配；输入新姓名会在保存公司时自动创建负责人。
+                            </div>
+                        </div>
+
+                        <div class="pt-3 flex gap-3">
+                            <button type="submit" class="btn btn-primary px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">保存修改</button>
+                            <a href="{{ route('companies.show', $company->id) }}" class="btn btn-outline-secondary px-6 py-2.5 border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg transition-colors">取消</a>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="mb-3">
-                <label for="address" class="form-label">地址</label>
-                <input type="text" class="form-control" id="address" placeholder="Enter Company Address" name="address" value="{{$company->address}}">
+
+            <div class="col-md-3">
+                <div class="position-sticky top-4 space-y-5">
+                    <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
+                        <h4 class="text-lg font-medium text-gray-800 mb-4">操作</h4>
+                        <ul class="space-y-2">
+                            <li>
+                                <a href="{{ route('companies.index') }}" class="flex items-center text-blue-600 hover:text-blue-800 transition-colors p-2 rounded-md hover:bg-blue-50">返回公司列表</a>
+                            </li>
+                            <li>
+                                <a href="{{ route('companies.show', $company->id) }}" class="flex items-center text-gray-600 hover:text-gray-800 transition-colors p-2 rounded-md hover:bg-gray-50">查看详情页</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-
-            <div class="mb-3">
-              <label for="exampleInputPassword1" class="form-label">description</label>
-              <textarea type="text" class="form-control" name="description"  style="resize: vertical" rows="5">{{$company->description}}</textarea>
-            </div>
-{{--            user--}}
-            <div class="mb-3">
-                <label for="user_id" class="form-label">User</label>
-                <select name="user_id" class="form-select" aria-label="Default select example">
-                    @foreach($users as $user)
-                        <option value="{{$user->id}}" @if($user->id == $company->user_id) selected @endif>{{$user->name}}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Update</button>
-          </form>
-  </div>
-
-
-
-  <div class="col-md-4">
-    <div class="position-sticky" style="top: 2rem;">
-      <div class="p-4 mb-3 bg-body-tertiary rounded">
-        <h4 class="fst-italic">Actions</h4>
-        <ul class="p-4">
-            <li class="p-1"><a href="/companies">Back to Main</a></li>
-            <li class="p-1"><a href="/companies/{{$company->id}}">Exit Edit</a></li>
-        </ul>
-       </div>
-
-      <div>
-        <h4 class="fst-italic">All Members</h4>
-        <ul class="list-unstyled">
-          <li>
-            <a class="d-flex flex-column flex-lg-row gap-3 align-items-start align-items-lg-center py-3 link-body-emphasis text-decoration-none border-top" href="#">
-              <svg class="bd-placeholder-img" width="100%" height="96" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false"><rect width="100%" height="100%" fill="#777"></rect></svg>
-              <div class="col-lg-8">
-                <h6 class="mb-0">Example blog post title</h6>
-                <small class="text-body-secondary">January 15, 2023</small>
-              </div>
-            </a>
-          </li>
-          <li>
-            <a class="d-flex flex-column flex-lg-row gap-3 align-items-start align-items-lg-center py-3 link-body-emphasis text-decoration-none border-top" href="#">
-              <svg class="bd-placeholder-img" width="100%" height="96" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false"><rect width="100%" height="100%" fill="#777"></rect></svg>
-              <div class="col-lg-8">
-                <h6 class="mb-0">This is another blog post title</h6>
-                <small class="text-body-secondary">January 14, 2023</small>
-              </div>
-            </a>
-          </li>
-          <li>
-            <a class="d-flex flex-column flex-lg-row gap-3 align-items-start align-items-lg-center py-3 link-body-emphasis text-decoration-none border-top" href="#">
-              <svg class="bd-placeholder-img" width="100%" height="96" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false"><rect width="100%" height="100%" fill="#777"></rect></svg>
-              <div class="col-lg-8">
-                <h6 class="mb-0">Longer blog post title: This one has multiple lines!</h6>
-                <small class="text-body-secondary">January 13, 2023</small>
-              </div>
-            </a>
-          </li>
-        </ul>
-      </div>
-
-      <div class="p-4">
-        <h4 class="fst-italic">Archives</h4>
-        <ol class="list-unstyled mb-0">
-          <li><a href="#">March 2021</a></li>
-          <li><a href="#">February 2021</a></li>
-          <li><a href="#">January 2021</a></li>
-          <li><a href="#">December 2020</a></li>
-          <li><a href="#">November 2020</a></li>
-          <li><a href="#">October 2020</a></li>
-          <li><a href="#">September 2020</a></li>
-          <li><a href="#">August 2020</a></li>
-          <li><a href="#">July 2020</a></li>
-          <li><a href="#">June 2020</a></li>
-          <li><a href="#">May 2020</a></li>
-          <li><a href="#">April 2020</a></li>
-        </ol>
-      </div>
-
-      <div class="p-4">
-        <h4 class="fst-italic">Elsewhere</h4>
-        <ol class="list-unstyled">
-          <li><a href="#">GitHub</a></li>
-          <li><a href="#">Twitter</a></li>
-          <li><a href="#">Facebook</a></li>
-        </ol>
-      </div>
+        </div>
     </div>
-  </div>
-</div>
+@endsection
 
+@section('scripts')
+    <script>
+        (function () {
+            var responsibleInput = document.getElementById('responsible_user_name');
+            var userSelect = document.getElementById('user_id');
+            var hintEl = document.getElementById('responsible-user-hint');
+            var users = @json($users->map(fn ($user) => ['id' => $user->id, 'name' => $user->name])->values());
 
+            if (!responsibleInput || !userSelect || !hintEl) {
+                return;
+            }
 
+            function syncResponsibleUser() {
+                var inputName = (responsibleInput.value || '').trim();
 
+                if (!inputName) {
+                    userSelect.value = '';
+                    hintEl.textContent = '留空则不设置负责人。';
+                    return;
+                }
+
+                var matchedUser = users.find(function (user) {
+                    return user.name === inputName;
+                });
+
+                if (matchedUser) {
+                    userSelect.value = String(matchedUser.id);
+                    hintEl.textContent = '已匹配现有负责人：' + matchedUser.name;
+                } else {
+                    userSelect.value = '';
+                    hintEl.textContent = '将创建新负责人：' + inputName;
+                }
+            }
+
+            responsibleInput.addEventListener('input', syncResponsibleUser);
+            responsibleInput.addEventListener('change', syncResponsibleUser);
+            syncResponsibleUser();
+        })();
+    </script>
 @endsection

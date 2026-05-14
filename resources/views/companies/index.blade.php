@@ -1,60 +1,86 @@
 @extends('layouts.main')
 @section("content")
 
-<main class="container">
-    <div class="my-3 p-4 bg-white rounded-xl shadow-sm transition-all duration-300 hover:shadow-md">
-        <h6 class="border-bottom border-gray-200 pb-2 mb-3 text-gray-800 font-medium">单位列表</h6>
-
-        @foreach ($companies as $company)
-            <div class="d-flex text-gray-600 pt-3 pb-2 border-b border-gray-100 last:border-0 last:pb-0 hover:bg-gray-50 rounded-lg px-2 -mx-2 transition-colors">
-                <!-- 单位图标 -->
-                <div class="flex-shrink-0 me-3">
-                    <div class="w-10 h-10 rounded-md bg-blue-50 flex items-center justify-center">
-                        <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M3 6a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V6zM13 9a1 1 0 100 2h-4a1 1 0 100-2h4z"></path>
-                        </svg>
-                    </div>
-                </div>
-
-                <!-- 单位信息 -->
-                <div class="flex-grow">
-                    @if($company->user)
-                        <p class="text-sm font-medium text-gray-900 mb-0.5">{{ $company->user->name }}</p>
-                    @endif
-                    <a href="/company/{{ $company->id }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors">
-                        {{ $company->name }}
-                    </a>
-                </div>
-
-                <!-- 操作按钮 -->
-                <div class="flex-shrink-0 ml-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button class="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        @endforeach
-
-        <!-- 空状态处理 -->
-        @empty($companies)
-            <div class="py-8 text-center text-gray-500">
-                <svg class="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 002 2h14a2 2 0 002-2V8z"></path>
-                </svg>
-                <p>暂无单位数据</p>
-            </div>
-        @endempty
-
-        <div class="mt-4 text-right">
-            <a href="{{route('company.create')}}" class="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors">
-                添加部门
-                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                </svg>
-            </a>
+<main class="container py-3">
+    <div class="my-3 p-4 bg-white rounded-xl shadow-sm">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+            <h5 class="mb-0">公司列表</h5>
+            <a href="{{ route('companies.create') }}" class="p-1 btn btn-primary btn-sm">添加公司</a>
         </div>
+
+        <form method="GET" action="{{ route('companies.index') }}" class="row g-2 mb-3">
+            <div class="col-md-8">
+                <input
+                    type="text"
+                    name="keyword"
+                    value="{{ $keyword ?? '' }}"
+                    class="form-control"
+                    placeholder="搜索公司名/税号/电话/地址/负责人"
+                >
+            </div>
+            <div class="col-md-4 d-flex gap-2">
+                <button type="submit" class="btn btn-outline-primary w-50">搜索</button>
+                <a href="{{ route('companies.index') }}" class="btn btn-outline-secondary w-50">重置</a>
+            </div>
+        </form>
+
+        <div class="text-muted small mb-3">
+            共 {{ $companies->total() }} 家公司
+            @if(!empty($keyword))
+                ，当前关键词："{{ $keyword }}"
+            @endif
+        </div>
+
+        @if($companies->count() > 0)
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                    <tr>
+                        <th>公司</th>
+                        <th>负责人</th>
+                        <th>联系方式</th>
+                        <th>税号</th>
+                        <th>地址</th>
+                        <th>项目数</th>
+                        <th>银行账户数</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach ($companies as $company)
+                        <tr>
+                            <td>
+                                <a href="{{ route('companies.show', $company->id) }}" class="fw-semibold text-decoration-none">
+                                    {{ $company->name }}
+                                </a>
+                                <div class="small text-muted">
+                                    更新于 {{ optional($company->updated_at)->format('Y-m-d H:i') }}
+                                </div>
+                            </td>
+                            <td>{{ optional($company->user)->name ?: '未设置负责人' }}</td>
+                            <td>{{ $company->telephone ?: '-' }}</td>
+                            <td>{{ $company->tax_id ?: '-' }}</td>
+                            <td class="text-truncate" style="max-width: 240px;">{{ $company->address ?: '-' }}</td>
+                            <td>{{ $company->contracts->count() }}</td>
+                            <td>{{ $company->bank_accounts_count }}</td>
+                            <td>
+                                <a href="{{ route('companies.show', $company->id) }}" class="btn btn-sm btn-outline-primary me-1">详情</a>
+                                <a href="{{ route('companies.edit', $company->id) }}" class="btn btn-sm btn-outline-secondary">编辑</a>
+                            </td>
+                        </tr>
+                    @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-3">
+                {{ $companies->links() }}
+            </div>
+        @else
+            <div class="py-5 text-center text-muted">
+                未找到匹配的公司信息
+            </div>
+        @endif
     </div>
 
 </main>

@@ -24,13 +24,25 @@
                 </div>
                 <div class="mb-3">
                     <label for="number" class="form-label">number</label>
-                    <input type="number" class="form-control" id="number" placeholder="Enter Project Number" name="number">
+                    <input
+                        type="text"
+                        class="form-control"
+                        id="number"
+                        placeholder="例如：6222 0212 3456 7890"
+                        name="number"
+                        inputmode="numeric"
+                        oninput="this.value=this.value.replace(/\D/g,'').replace(/(.{4})/g,'$1 ').trim();"
+                    >
                 </div>
                 <div class="mb-3">
                     <label for="company" class="form-label">
                         Company
                     </label>
                     <selector :model="'company'"></selector>
+                </div>
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="is_primary" name="is_primary" value="1">
+                    <label class="form-check-label" for="is_primary">设为主账号</label>
                 </div>
                 <button type="submit" class="btn btn-primary">Create</button>
             </form>

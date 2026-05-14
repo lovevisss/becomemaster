@@ -35,13 +35,18 @@ class Company extends Model
 
     public function user()
     {
-        return $this->hasOne(User::class);
+        return $this->hasOne(User::class)->latestOfMany();
     }
 
     // projects
     public function projects()
     {
         return $this->hasMany(Project::class);
+    }
+
+    public function contracts()
+    {
+        return $this->hasMany(Contract::class);
     }
     // comments
     public function comments()

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Contract;
 use App\Models\Project;
+use App\Models\ProjectType;
 use Illuminate\Http\Request;
 use PhpOffice\PhpWord\Element\Table;
 use PhpOffice\PhpWord\IOFactory;
@@ -21,10 +22,25 @@ class ProjectController extends Controller
      */
     public function index(Request $request)
     {
-//        dd($request);
-//        $projects = Project::all();
-        $contracts = Contract::orderBy('signing_date')->get();
-        return view('projects.index', compact('contracts'));
+        $projectTypeId = $request->input('project_type_id');
+        $companyName = trim((string) $request->input('company_name', ''));
+
+        $contracts = Contract::query()
+            ->with(['contract_type', 'project_type', 'company', 'status'])
+            ->when(!empty($projectTypeId), function ($query) use ($projectTypeId) {
+                $query->where('project_type_id', $projectTypeId);
+            })
+            ->when($companyName !== '', function ($query) use ($companyName) {
+                $query->whereHas('company', function ($companyQuery) use ($companyName) {
+                    $companyQuery->where('name', 'like', "%{$companyName}%");
+                });
+            })
+            ->orderBy('signing_date')
+            ->get();
+
+        $projectTypes = ProjectType::query()->orderBy('name')->get(['id', 'name']);
+
+        return view('projects.index', compact('contracts', 'projectTypes', 'projectTypeId', 'companyName'));
     }
 
     /**

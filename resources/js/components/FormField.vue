@@ -17,6 +17,14 @@ export default {
             type: String,
             default: 'text'
         },
+        format: {
+            type: String,
+            default: ''
+        },
+        inputmode: {
+            type: String,
+            default: ''
+        },
         placeholder: {
             type: String,
             default: ''
@@ -27,13 +35,60 @@ export default {
         }
     },
     computed: {
-        value: {
+        inputType() {
+            return this.format === 'number' ? 'text' : this.type;
+        },
+        inputValue: {
             get() {
+                if (this.format === 'number') {
+                    return this.formatNumber(this.modelValue);
+                }
+
                 return this.modelValue;
             },
             set(newValue) {
+                if (this.format === 'number') {
+                    this.$emit('update:modelValue', this.normalizeNumber(newValue));
+                    return;
+                }
+
                 this.$emit('update:modelValue', newValue);
             }
+        }
+    },
+    methods: {
+        normalizeNumber(value) {
+            const stringValue = String(value ?? '');
+            const withoutSeparators = stringValue.replace(/,/g, '');
+            const sanitized = withoutSeparators.replace(/[^\d.]/g, '');
+            const parts = sanitized.split('.');
+
+            if (parts.length <= 1) {
+                return sanitized;
+            }
+
+            return `${parts[0]}.${parts.slice(1).join('')}`;
+        },
+        formatNumber(value) {
+            const normalized = this.normalizeNumber(value);
+
+            if (normalized === '') {
+                return '';
+            }
+
+            const hasTrailingDot = normalized.endsWith('.');
+            const [integerPart, decimalPart] = normalized.split('.');
+            const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+            if (hasTrailingDot) {
+                return `${formattedInteger}.`;
+            }
+
+            if (decimalPart !== undefined) {
+                return `${formattedInteger}.${decimalPart}`;
+            }
+
+            return formattedInteger;
         }
     }
 };
@@ -42,7 +97,16 @@ export default {
 <template>
     <div class="mb-3">
         <label :for="id" class="form-label">{{ label }}<span v-if="required" class="required">*</span></label>
-        <input :type="type" class="form-control" :id="id" :placeholder="placeholder" :required="required" :name="id" v-model="value" />
+        <input
+            :type="inputType"
+            class="form-control"
+            :id="id"
+            :placeholder="placeholder"
+            :required="required"
+            :name="id"
+            :inputmode="inputmode || null"
+            v-model="inputValue"
+        />
     </div>
 </template>
 

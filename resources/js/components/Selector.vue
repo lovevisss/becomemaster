@@ -1,7 +1,26 @@
 <template>
-    <select  class="form-control" v-model="value"  >
-        <option :value="c.id" v-for="c in models" :key="c.id">{{ c.name }}</option>
-    </select>
+    <div>
+        <input
+            v-if="searchable"
+            :id="inputId"
+            type="text"
+            class="form-control"
+            :list="datalistId"
+            :placeholder="searchPlaceholderText"
+            v-model="searchText"
+            @input="handleSearchInput"
+            @change="handleSearchInput"
+            autocomplete="off"
+        >
+        <datalist v-if="searchable" :id="datalistId">
+            <option v-for="c in filteredModels" :key="c.id" :value="c.name"></option>
+        </datalist>
+
+        <select v-else class="form-control" v-model="value">
+            <option :value="''" disabled>{{ placeholderText }}</option>
+            <option :value="c.id" v-for="c in models" :key="c.id">{{ c.name }}</option>
+        </select>
+    </div>
 </template>
 
 
@@ -16,17 +35,54 @@ export default {
             type: [String,Number],
             default: 0
         },
-
+        searchable: {
+            type: Boolean,
+            default: false
+        },
     },
 
     computed:{
-        model_id: function(){
-        //   model是companies 如何转换成company
-
-        return this.model + 'Id'
+        datalistId() {
+            return `${this.model}-selector-options`;
         },
-        selectedModelId: function(){
-            return 'selected_' + this.model_id
+        inputId() {
+            return `${this.model}-selector-input`;
+        },
+        endpoint: function (){
+            if (this.model === 'company') {
+                return '/companies';
+            }
+
+            return `/${this.model}`;
+        },
+        placeholderText: function () {
+            return `请选择${this.modelLabel}`;
+        },
+        searchPlaceholderText: function () {
+            return `输入关键字查找${this.modelLabel}`;
+        },
+        modelLabel: function () {
+            const labels = {
+                user: '签订人',
+                company: '公司',
+                funding: '经费来源',
+                project_type: '项目类型',
+                contract_type: '合同类型'
+            };
+
+            return labels[this.model] || '选项';
+        },
+        selectedModel() {
+            return this.models.find((model) => String(model.id) === String(this.modelValue)) || null;
+        },
+        filteredModels() {
+            const keyword = String(this.searchText || '').trim().toLowerCase();
+
+            if (!keyword) {
+                return this.models;
+            }
+
+            return this.models.filter((model) => String(model.name || '').toLowerCase().includes(keyword));
         },
         value: {
             get(){
@@ -40,11 +96,25 @@ export default {
         }
     },
 
+    watch: {
+        modelValue: {
+            immediate: true,
+            handler() {
+                this.syncSearchTextFromValue();
+            }
+        },
+        models() {
+            this.syncSearchTextFromValue();
+        }
+    },
+
     mounted() {
         // this.model
-        axios.get(`/${this.model}`).then(
+        axios.get(this.endpoint).then(
             res => {
-                this.models = res.data
+                this.models = Array.isArray(res.data)
+                    ? res.data
+                    : (res.data && Array.isArray(res.data.data) ? res.data.data : []);
             }
         )
 
@@ -52,7 +122,31 @@ export default {
 
     data() {
         return {
-            models: []
+            models: [],
+            searchText: ''
+        }
+    },
+
+    methods: {
+        syncSearchTextFromValue() {
+            if (!this.searchable) {
+                return;
+            }
+
+            if (this.selectedModel) {
+                this.searchText = this.selectedModel.name;
+            }
+        },
+        handleSearchInput() {
+            const normalizedInput = String(this.searchText || '').trim();
+            const matchedModel = this.models.find((model) => String(model.name || '').trim().toLowerCase() === normalizedInput.toLowerCase());
+
+            if (matchedModel) {
+                this.value = matchedModel.id;
+                return;
+            }
+
+            this.value = '';
         }
     },
 

@@ -50,12 +50,13 @@ Route::post('testWord', [\App\Http\Controllers\WordController::class, 'test'])->
 Route::get('/testWrite', [\App\Http\Controllers\WordController::class,'writeExcel']);
 
 Route::resource('apply_forms', \App\Http\Controllers\ApplyFormController::class);
-Route::resource('company', \App\Http\Controllers\CompanyController::class);
+Route::resource('companies', \App\Http\Controllers\CompanyController::class)->names('companies');
 Route::resource('bank_accounts', \App\Http\Controllers\BankAccountController::class);
 Route::resource('contract', \App\Http\Controllers\ContractController::class);
 //Route::post('contract/{contract}', [\App\Http\Controllers\ContractController::class, 'update']);
 
 Route::resource('projects', \App\Http\Controllers\ProjectController::class);
+Route::resource('contracts', \App\Http\Controllers\ContractController::class)->names('contracts');
 
 Route::get('BigPayForm/{project}', [\App\Http\Controllers\ProjectController::class, 'getBigPayForm'])->name('projects.getBigPayForm');
 

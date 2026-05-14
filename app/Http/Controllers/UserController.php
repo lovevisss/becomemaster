@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Http\Controllers\AppBaseController;
+use App\Models\Company;
 use App\Models\User;
 use App\Repositories\UserRepository;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Laracasts\Flash\Flash;
 
 class UserController extends AppBaseController
@@ -38,7 +40,9 @@ class UserController extends AppBaseController
      */
     public function create()
     {
-        return view('users.create');
+        $companies = Company::orderBy('name')->get();
+
+        return view('users.create', compact('companies'));
     }
 
     /**
@@ -46,14 +50,33 @@ class UserController extends AppBaseController
      */
     public function store(Request $request)
     {
-        $input = $request->all();
-//        dd($input);
+        $input = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['nullable', 'email', 'max:255', 'unique:users,email'],
+            'phone' => ['nullable', 'string', 'max:255', 'unique:users,phone'],
+            'role_id' => ['nullable', 'integer'],
+            'company_id' => ['nullable', 'integer', 'exists:companies,id'],
+            'password' => ['nullable', 'string', 'min:6'],
+        ]);
+
+        if (!empty($input['password'])) {
+            $input['password'] = Hash::make($input['password']);
+        }
+
+        if (empty($input['role_id'])) {
+            $input['role_id'] = 4;
+        }
+
         $user = $this->userRepository->create($input);
 
-        Flash::success('User saved successfully.');
         if($request->wantsJson()){
-            return response()->json($user);
+            return response()->json([
+                'id' => $user->id,
+                'name' => $user->name,
+                'company_id' => $user->company_id,
+            ]);
         }else{
+            Flash::success('User saved successfully.');
 
             return redirect(route('users.index'));
         }

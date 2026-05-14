@@ -10,6 +10,9 @@ class BankAccount extends Model
 {
     use HasFactory;
     protected $guarded = [];
+    protected $casts = [
+        'is_primary' => 'boolean',
+    ];
 
     public static function CreateOrUpdate(array $rowData)
     {
@@ -28,5 +31,12 @@ class BankAccount extends Model
     public function company()
     {
         return $this->belongsTo(Company::class);
+    }
+
+    public function getFormattedNumberAttribute()
+    {
+        $rawNumber = preg_replace('/\s+/', '', (string) $this->number);
+
+        return trim(chunk_split($rawNumber, 4, ' '));
     }
 }
