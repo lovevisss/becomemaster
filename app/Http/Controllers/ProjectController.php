@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Contract;
+use App\Models\Company;
 use App\Models\Project;
 use App\Models\ProjectType;
 use Illuminate\Http\Request;
@@ -23,6 +24,7 @@ class ProjectController extends Controller
     public function index(Request $request)
     {
         $projectTypeId = $request->input('project_type_id');
+        $companyId = $request->filled('company_id') ? (int) $request->input('company_id') : null;
         $companyName = trim((string) $request->input('company_name', ''));
 
         $contracts = Contract::query()
@@ -30,17 +32,22 @@ class ProjectController extends Controller
             ->when(!empty($projectTypeId), function ($query) use ($projectTypeId) {
                 $query->where('project_type_id', $projectTypeId);
             })
+            ->when(!empty($companyId), function ($query) use ($companyId) {
+                $query->where('company_id', $companyId);
+            })
             ->when($companyName !== '', function ($query) use ($companyName) {
                 $query->whereHas('company', function ($companyQuery) use ($companyName) {
                     $companyQuery->where('name', 'like', "%{$companyName}%");
                 });
             })
-            ->orderBy('signing_date')
+            ->orderByDesc('signing_date')
+            ->orderByDesc('id')
             ->get();
 
         $projectTypes = ProjectType::query()->orderBy('name')->get(['id', 'name']);
+        $selectedCompany = !empty($companyId) ? Company::query()->find($companyId, ['id', 'name']) : null;
 
-        return view('projects.index', compact('contracts', 'projectTypes', 'projectTypeId', 'companyName'));
+        return view('projects.index', compact('contracts', 'projectTypes', 'projectTypeId', 'companyName', 'companyId', 'selectedCompany'));
     }
 
     /**

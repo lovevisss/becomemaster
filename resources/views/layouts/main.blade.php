@@ -18,7 +18,7 @@
 
     </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100 container col-md-9 col-md-offset-3" id="app">
+        <div class="min-h-screen w-full bg-gray-100 mx-auto max-w-[1680px] px-4 sm:px-6 lg:px-8" id="app">
             @include('partials.nav')
             @if(Session::has('flash_message'))
                 <div class="alert alert-success"><span class="glyphicon glyphicon-ok"></span><em> {!! session('flash_message') !!}</em></div>
