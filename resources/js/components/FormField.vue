@@ -96,10 +96,10 @@ export default {
 
 <template>
     <div class="mb-3">
-        <label :for="id" class="form-label">{{ label }}<span v-if="required" class="required">*</span></label>
+        <label :for="id" class="mb-1 block text-sm font-medium text-slate-700">{{ label }}<span v-if="required" class="ml-0.5 text-red-500">*</span></label>
         <input
             :type="inputType"
-            class="form-control"
+            class="block w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
             :id="id"
             :placeholder="placeholder"
             :required="required"

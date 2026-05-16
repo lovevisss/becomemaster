@@ -9,7 +9,7 @@ use App\Models\Funding;
 use App\Models\ProjectType;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Arr;
 use Illuminate\Validation\Rule;
 
 class ContractController extends Controller
@@ -90,6 +90,7 @@ class ContractController extends Controller
      */
     public function edit(Contract $contract)
     {
+        $contract->load(['company', 'user', 'status']);
         $users = User::all();
         $companies = Company::all();
         return view('contracts.edit', compact('contract','users', 'companies'));
@@ -100,12 +101,37 @@ class ContractController extends Controller
      */
     public function update(Request $request, Contract $contract)
     {
-//        如果有文件 则更新
-//        dd($request);
-//        dd('update');
-        $contract->fill($request->all());
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'year' => ['required', 'integer'],
+            'code' => ['nullable', 'string', 'max:255'],
+            'signing_date' => ['required', 'date'],
+            'company_id' => ['required', 'integer', 'exists:companies,id'],
+            'user_id' => [
+                'required',
+                'integer',
+                Rule::exists('users', 'id')->where(function ($query) use ($request) {
+                    $query->where('company_id', $request->input('company_id'));
+                }),
+            ],
+            'amount' => ['required', 'numeric'],
+            'fulfillmentDeposit' => ['nullable', 'numeric'],
+            'funding_id' => ['nullable', 'integer', 'exists:fundings,id'],
+            'project_type_id' => ['nullable', 'integer', 'exists:project_types,id'],
+            'contract_type_id' => ['nullable', 'integer', 'exists:contract_types,id'],
+            'status_id' => ['nullable', 'integer', 'exists:statuses,id'],
+            'path' => ['nullable', 'file'],
+            'consult' => ['nullable', 'file'],
+            'acceptance' => ['nullable', 'file'],
+        ]);
+
+        $contract->fill(Arr::except($validated, ['path', 'consult', 'acceptance']));
         $file = $request->file('path');
         if($file){
+            if (!$file->isValid()) {
+                return response()->json(['message' => '合同文件无效或上传失败，请重新上传。'], 422);
+            }
+
             $path = $file->store('public/contracts');
             $path = str_replace('public/', '', $path);
             $contract->path = $path;
@@ -113,7 +139,10 @@ class ContractController extends Controller
         }
         $consult = $request->file('consult');
         if($consult){
-//            dd($consult);
+            if (!$consult->isValid()) {
+                return response()->json(['message' => '询价纪要文件无效或上传失败，请重新上传。'], 422);
+            }
+
             $consultPath = $consult->store('public/contracts');
             $consultPath = str_replace('public/', '', $consultPath);
             $contract->consult = $consultPath;
@@ -121,11 +150,17 @@ class ContractController extends Controller
 
         $acceptance = $request->file('acceptance');
         if($acceptance){
+            if (!$acceptance->isValid()) {
+                return response()->json(['message' => '验收文件无效或上传失败，请重新上传。'], 422);
+            }
+
             $acceptancePath = $acceptance->store('public/contracts');
             $acceptancePath = str_replace('public/', '', $acceptancePath);
             $contract->acceptance = $acceptancePath;
         }
         $contract->save();
+
+        return response()->json($contract->fresh(['company', 'user', 'status']));
     }
 
     /**

@@ -8,9 +8,20 @@ class CasService
 {
     public function serviceUrl(): string
     {
-        $path = ltrim((string) config('cas.service_path', '/login'), '/');
+        return $this->serviceUrlForReturn('/');
+    }
 
-        return url($path);
+    public function serviceUrlForReturn(string $returnUrl): string
+    {
+        $fixedServiceUrl = trim((string) config('cas.service_url', ''));
+        if ($fixedServiceUrl !== '') {
+            return $fixedServiceUrl;
+        }
+
+        $path = ltrim((string) config('cas.service_path', '/login'), '/');
+        $route = route('login', ['returnUrl' => $returnUrl], false);
+
+        return url($route ?: $path);
     }
 
     public function buildLoginUrl(string $serviceUrl): string
@@ -74,4 +85,3 @@ class CasService
         ];
     }
 }
-

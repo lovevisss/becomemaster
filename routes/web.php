@@ -44,7 +44,10 @@ Route::resource('contract', \App\Http\Controllers\ContractController::class);
 Route::resource('projects', \App\Http\Controllers\ProjectController::class);
 Route::resource('contracts', \App\Http\Controllers\ContractController::class)->names('contracts');
 
-Route::get('BigPayForm/{project}', [\App\Http\Controllers\ProjectController::class, 'getBigPayForm'])->name('projects.getBigPayForm');
+Route::get(
+    'projects/{project}/contracts/{contract}/big-pay-form',
+    [\App\Http\Controllers\ProjectController::class, 'exportBigPayForm']
+)->name('projects.contracts.big-pay-form');
 
 Route::post('payment_invoice', [\App\Http\Controllers\PaymentController::class, 'updateInvoice']);
 
@@ -84,6 +87,7 @@ Route::resource('roles', \App\Http\Controllers\RoleController::class);
 Route::resource('users', \App\Http\Controllers\UserController::class);
 Route::resource('user', \App\Http\Controllers\UserController::class);
 Route::resource('funding', \App\Http\Controllers\FundingController::class);
+Route::resource('status', \App\Http\Controllers\StatusController::class);
 Route::resource('bank_account', \App\Http\Controllers\BankAccountController::class);
 Route::resource('project_type', \App\Http\Controllers\ProjectTypeController::class);
 Route::resource('contract_type', \App\Http\Controllers\ContractTypeController::class);

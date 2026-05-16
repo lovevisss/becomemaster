@@ -10,9 +10,9 @@ class StatusController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        return Status::query()->orderBy('id')->get();
     }
 
     /**

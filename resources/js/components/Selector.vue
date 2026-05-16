@@ -4,7 +4,7 @@
             v-if="searchable"
             :id="inputId"
             type="text"
-            class="form-control"
+            class="block w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
             :list="datalistId"
             :placeholder="searchPlaceholderText"
             v-model="searchText"
@@ -16,7 +16,7 @@
             <option v-for="c in filteredModels" :key="c.id" :value="c.name"></option>
         </datalist>
 
-        <select v-else class="form-control" v-model="value">
+        <select v-else class="block w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20" v-model="value">
             <option :value="''" disabled>{{ placeholderText }}</option>
             <option :value="c.id" v-for="c in models" :key="c.id">{{ c.name }}</option>
         </select>
@@ -65,6 +65,7 @@ export default {
             const labels = {
                 user: '签订人',
                 company: '公司',
+                status: '合同状态',
                 funding: '经费来源',
                 project_type: '项目类型',
                 contract_type: '合同类型'

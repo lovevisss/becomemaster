@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Contract;
 use App\Models\Company;
+use App\Models\Contract;
 use App\Models\Project;
 use App\Models\ProjectType;
+use App\Services\BigPayFormExporter;
 use Illuminate\Http\Request;
-use PhpOffice\PhpWord\Element\Table;
-use PhpOffice\PhpWord\IOFactory;
 
 class ProjectController extends Controller
 {
@@ -55,7 +54,6 @@ class ProjectController extends Controller
      */
     public function create()
     {
-
         return view('projects.create');
     }
 
@@ -82,8 +80,21 @@ class ProjectController extends Controller
      */
     public function show(Project $project)
     {
-        $project = Project::where('id', $project->id)->with('tasks')->first();
+        $project = Project::where('id', $project->id)
+            ->with([
+                'tasks',
+                'company.user',
+                'contracts.user',
+                'contracts.company.user',
+                'contracts.funding',
+                'contracts.company.bankAccounts' => function ($query) {
+                    $query->orderByDesc('is_primary')->orderBy('id');
+                },
+            ])
+            ->first();
+
         $comments = $project->comments;
+
         return view('projects.show', compact('project', 'comments'));
     }
 
@@ -121,65 +132,21 @@ class ProjectController extends Controller
         session()->flash('message', 'Project deleted successfully');
     }
 
-    public function getBigPayForm(Project $project)
+    public function exportBigPayForm(Project $project, Contract $contract, BigPayFormExporter $exporter)
     {
-        $file = public_path('/excel/bigPay.docx');
-
-        $phpWord = IOFactory::load($file);
-        $forms = [
-            "收款单位" => $project->company->name,
-            "联系人" => $project->company->user->name,
-            "联系电话" => $project->company->user->phone,
-
-        ];
-
-//        dd($forms);
-
-        $sections = $phpWord->getSections();
-        foreach ($sections as $section) {
-            $elements = $section->getElements();
-            foreach ($elements as $element) {
-                if ($element instanceof Table) {
-                    $this->writeTable($element, $forms);
-                }
-            }
+        if ((int) $contract->project_id !== (int) $project->id) {
+            abort(404);
         }
-        $out_put_path = public_path('/excel/helloWorld.docx');
-        $objWriter = IOFactory::createWriter($phpWord, 'Word2007');
-        $objWriter->save($out_put_path);
-        return response()->download($out_put_path);
+
+        $project->loadMissing('company.user');
+        $contract->loadMissing(['company.user', 'company.bankAccounts', 'funding']);
+
+        $result = $exporter->export($project, $contract);
+
+        return response()
+            ->download($result['path'], $result['download_name'], [
+                'Content-Type' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            ])
+            ->deleteFileAfterSend(true);
     }
-
-
-    private function writeTable($table, $forms)
-    {
-        $rows = $table->getRows();
-        foreach ($rows as $row) {
-            $cells = $row->getCells();
-//            echo count($cells);
-            foreach ($cells as $keyCell => $cell) {
-                $textRuns = $cell->getElements();
-                foreach ($textRuns as $textRun) {
-                    if ($textRun instanceof \PhpOffice\PhpWord\Element\TextRun) {
-                        $text = $textRun->getText();
-                        foreach ($forms as $key => $value) {
-                            if (str_contains($text, $key)) {
-//                                dd($keyCell);
-                                $targetCell = $cells[$keyCell+1];
-                                $netTextRuns = $targetCell->getElements();
-                                foreach ($netTextRuns as $netTextRun) {
-                                    if ($netTextRun instanceof \PhpOffice\PhpWord\Element\TextRun ) {
-                                        $netTextRun->addText($value);
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-
 }
