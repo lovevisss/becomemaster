@@ -29,7 +29,15 @@ class UserController extends AppBaseController
     {
         $users = $this->userRepository->paginate(10);
         if($request->wantsJson()){
-            return User::all();
+            $companyId = $request->input('company_id');
+
+            return User::query()
+                ->select(['id', 'name', 'company_id'])
+                ->when(!empty($companyId), function ($query) use ($companyId) {
+                    $query->where('company_id', $companyId);
+                })
+                ->orderBy('name')
+                ->get();
         }
         return view('users.index')
             ->with('users', $users);

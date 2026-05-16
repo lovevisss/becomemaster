@@ -37,16 +37,20 @@
             <FormField id="signing_date" label="签订日期" type="date" :required="true" v-model="formData.signing_date"></FormField>
 
             <div class="mb-3">
-                <label for="user_id" class="form-label">签订人</label>
-                <selector model="user" v-model="formData.user_id" :searchable="true"></selector>
-            </div>
-
-            <FormField id="amount" label="合同金额" type="text" format="number" inputmode="decimal" v-model="formData.amount" :required="true"></FormField>
-
-            <div class="mb-3">
                 <label for="company_id" class="form-label">公司</label>
                 <selector model="company" v-model="formData.company_id" :searchable="true"></selector>
             </div>
+
+            <div class="mb-3">
+                <label for="user_id" class="form-label">签订人</label>
+                <select id="user_id" class="form-control" v-model="formData.user_id" :disabled="!formData.company_id || usersLoading">
+                    <option value="" disabled>{{ formData.company_id ? '请选择签订人' : '请先选择公司' }}</option>
+                    <option v-for="user in users" :key="user.id" :value="user.id">{{ user.name }}</option>
+                </select>
+                <small class="text-muted" v-if="formData.company_id && !usersLoading && users.length === 0">该公司暂无可选签订人</small>
+            </div>
+
+            <FormField id="amount" label="合同金额" type="text" format="number" inputmode="decimal" v-model="formData.amount" :required="true"></FormField>
 
             <FormField id="fulfillmentDeposit" label="质保金" type="text" format="number" inputmode="decimal" v-model="formData.fulfillmentDeposit"></FormField>
 
@@ -81,6 +85,8 @@ export default {
         if (this.contract != null) {
             this.formData = { ...this.contract };
         }
+
+        this.initializeUsers();
     },
 
     computed: {
@@ -128,13 +134,63 @@ export default {
             selectedFile: null,
             selectedConsult: null,
             selectedAcceptance: null,
-            isSubmitting: false
+            isSubmitting: false,
+            users: [],
+            usersLoading: false,
+            initializingUsers: true
         };
     },
 
+    watch: {
+        'formData.company_id': function (newCompanyId, oldCompanyId) {
+            if (!this.initializingUsers && String(newCompanyId || '') !== String(oldCompanyId || '')) {
+                this.formData.user_id = '';
+            }
+
+            this.fetchUsersByCompany(newCompanyId);
+        }
+    },
+
     methods: {
+        initializeUsers() {
+            this.fetchUsersByCompany(this.formData.company_id)
+                .finally(() => {
+                    this.initializingUsers = false;
+                });
+        },
+
+        fetchUsersByCompany(companyId) {
+            this.usersLoading = true;
+
+            const params = {};
+            if (companyId) {
+                params.company_id = companyId;
+            }
+
+            return axios.get('/users', { params })
+                .then((response) => {
+                    const payload = Array.isArray(response.data)
+                        ? response.data
+                        : (response.data && Array.isArray(response.data.data) ? response.data.data : []);
+
+                    this.users = payload;
+                })
+                .catch((error) => {
+                    console.log(error);
+                    this.users = [];
+                })
+                .finally(() => {
+                    this.usersLoading = false;
+                });
+        },
+
         createContract() {
             if (this.isSubmitting) {
+                return;
+            }
+
+            if (!this.editMode && !this.selectedFile) {
+                alert('请先上传合同文件。');
                 return;
             }
 
@@ -144,7 +200,11 @@ export default {
             this.formData.fulfillmentDeposit = this.normalizeNumericValue(this.formData.fulfillmentDeposit);
 
             const payload = new FormData();
+            const excludedFields = ['path', 'consult', 'acceptance'];
             for (const key in this.formData) {
+                if (excludedFields.includes(key)) {
+                    continue;
+                }
                 if (this.formData[key] === null || this.formData[key] === undefined) {
                     continue;
                 }

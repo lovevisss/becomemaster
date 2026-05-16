@@ -1,18 +1,18 @@
 @extends('layouts.main')
 @section("content")
 
-<main class="w-full pb-8 pt-4 bg-blue-600">
-    <div class="rounded-2xl bg-gradient-to-r from-slate-900 via-slate-800 to-blue-900 bg-blue-600 p-5 text-black shadow-lg sm:p-6">
+<main class="w-full pb-8 pt-4 ">
+    <div class="rounded-2xl bg-gradient-to-r from-slate-900 via-slate-800 to-blue-900  p-5 text-white shadow-lg sm:p-6">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <h1 class="text-2xl font-bold">项目总览</h1>
                 <p class="mt-1 text-sm text-slate-200">按签订日期降序展示，并按年份分组。</p>
             </div>
             <div class="flex flex-wrap gap-2">
-                <a href="{{ route('contract.create') }}" class="inline-flex items-center rounded-lg bg-white/20 px-4 py-2 text-sm font-medium text-black backdrop-blur hover:bg-white/30">
+                <a href="{{ route('contract.create') }}" class="inline-flex items-center rounded-lg bg-white/20 px-4 py-2 text-sm font-medium text-white backdrop-blur hover:bg-white/30">
                     新建合同
                 </a>
-                <a href="{{ route('bank_accounts.index') }}" class="inline-flex items-center rounded-lg border border-white/30 px-4 py-2 text-sm font-medium text-black hover:bg-white/10">
+                <a href="{{ route('bank_accounts.index') }}" class="inline-flex items-center rounded-lg border border-white/30 px-4 py-2 text-sm font-medium text-white hover:bg-white/10">
                     银行账户管理
                 </a>
             </div>
@@ -22,7 +22,7 @@
             <span class="rounded-full bg-white/15 px-3 py-1 text-xs font-medium text-slate-100">合同数：{{ $contracts->count() }}</span>
             <span class="rounded-full bg-white/15 px-3 py-1 text-xs font-medium text-slate-100">总金额：{{ number_format((float) $contracts->sum('amount'), 2) }}</span>
             @if(!empty($selectedCompany))
-                <span class="rounded-full bg-blue-500/50 px-3 py-1 text-xs font-medium text-black">公司筛选：{{ $selectedCompany->name }}</span>
+                <span class="rounded-full bg-blue-500/50 px-3 py-1 text-xs font-medium text-white">公司筛选：{{ $selectedCompany->name }}</span>
             @endif
         </div>
     </div>
@@ -48,7 +48,7 @@
                 @if(!empty($companyId))
                     <input type="hidden" name="company_id" value="{{ $companyId }}">
                 @endif
-                <button type="submit" class="inline-flex items-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-black hover:bg-slate-800">筛选</button>
+                <button type="submit" class="inline-flex items-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800">筛选</button>
                 <a href="{{ route('projects.index') }}" class="inline-flex items-center rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">重置</a>
             </div>
         </form>
