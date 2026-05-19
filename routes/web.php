@@ -4,7 +4,6 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Input;
 use App\Events\OrderStatusUpdated;
 /*
 |--------------------------------------------------------------------------
@@ -43,6 +42,8 @@ Route::resource('contract', \App\Http\Controllers\ContractController::class);
 
 Route::resource('projects', \App\Http\Controllers\ProjectController::class);
 Route::resource('contracts', \App\Http\Controllers\ContractController::class)->names('contracts');
+Route::get('contracts/{contract}/big-pay-form', [\App\Http\Controllers\ContractController::class, 'exportBigPayForm'])
+    ->name('contracts.big-pay-form');
 
 Route::get(
     'projects/{project}/contracts/{contract}/big-pay-form',

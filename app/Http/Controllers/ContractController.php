@@ -8,6 +8,7 @@ use App\Models\ContractType;
 use App\Models\Funding;
 use App\Models\ProjectType;
 use App\Models\User;
+use App\Services\BigPayFormExporter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Validation\Rule;
@@ -90,7 +91,7 @@ class ContractController extends Controller
      */
     public function edit(Contract $contract)
     {
-        $contract->load(['company', 'user', 'status']);
+        $contract->load(['company', 'user', 'status', 'project']);
         $users = User::all();
         $companies = Company::all();
         return view('contracts.edit', compact('contract','users', 'companies'));
@@ -123,9 +124,10 @@ class ContractController extends Controller
             'path' => ['nullable', 'file'],
             'consult' => ['nullable', 'file'],
             'acceptance' => ['nullable', 'file'],
+            'invoice' => ['nullable', 'file'],
         ]);
 
-        $contract->fill(Arr::except($validated, ['path', 'consult', 'acceptance']));
+        $contract->fill(Arr::except($validated, ['path', 'consult', 'acceptance', 'invoice']));
         $file = $request->file('path');
         if($file){
             if (!$file->isValid()) {
@@ -158,6 +160,18 @@ class ContractController extends Controller
             $acceptancePath = str_replace('public/', '', $acceptancePath);
             $contract->acceptance = $acceptancePath;
         }
+
+        $invoice = $request->file('invoice');
+        if($invoice){
+            if (!$invoice->isValid()) {
+                return response()->json(['message' => '发票文件无效或上传失败，请重新上传。'], 422);
+            }
+
+            $invoicePath = $invoice->store('public/contracts');
+            $invoicePath = str_replace('public/', '', $invoicePath);
+            $contract->invoice = $invoicePath;
+        }
+
         $contract->save();
 
         return response()->json($contract->fresh(['company', 'user', 'status']));
@@ -169,5 +183,23 @@ class ContractController extends Controller
     public function destroy(Contract $contract)
     {
         //
+    }
+
+    public function exportBigPayForm(Contract $contract, BigPayFormExporter $exporter)
+    {
+        $contract->loadMissing([
+            'project.company.user',
+            'company.user',
+            'company.bankAccounts',
+            'funding',
+        ]);
+
+        $result = $exporter->export($contract->project, $contract);
+
+        return response()
+            ->download($result['path'], $result['download_name'], [
+                'Content-Type' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            ])
+            ->deleteFileAfterSend(true);
     }
 }

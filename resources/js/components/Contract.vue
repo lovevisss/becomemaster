@@ -132,6 +132,18 @@
                             <input type="file" id="acceptance" ref="acceptanceInput" @change="handleAcceptanceChange" class="block w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 shadow-sm transition file:mr-4 file:rounded-lg file:border-0 file:bg-slate-100 file:px-3 file:py-2 file:text-sm file:font-medium file:text-slate-700 hover:file:bg-slate-200 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
                             <p v-if="selectedAcceptance" class="mt-2 text-xs font-medium text-emerald-600">已选择：{{ selectedAcceptance.name }}</p>
                         </div>
+
+                        <div class="rounded-2xl border border-slate-200 p-4">
+                            <div class="mb-3 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                                <div class="min-w-0">
+                                    <p class="text-sm font-medium text-slate-900">发票信息</p>
+                                    <p class="mt-1 text-xs text-slate-500">{{ formData.invoice ? displayFileName(formData.invoice) : '暂未上传' }}</p>
+                                </div>
+                                <a v-if="formData.invoice" :href="fileinvoice" download class="inline-flex items-center rounded-xl bg-slate-100 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-200">下载</a>
+                            </div>
+                            <input type="file" id="invoice" ref="invoiceInput" @change="handleInvoiceChange" class="block w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 shadow-sm transition file:mr-4 file:rounded-lg file:border-0 file:bg-slate-100 file:px-3 file:py-2 file:text-sm file:font-medium file:text-slate-700 hover:file:bg-slate-200 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+                            <p v-if="selectedInvoice" class="mt-2 text-xs font-medium text-emerald-600">已选择：{{ selectedInvoice.name }}</p>
+                        </div>
                     </div>
                 </section>
             </div>

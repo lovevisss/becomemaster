@@ -12,7 +12,7 @@ use ZipArchive;
 
 class BigPayFormExporter
 {
-    public function export(Project $project, Contract $contract): array
+    public function export(?Project $project, Contract $contract): array
     {
         $templatePath = resource_path('templates/big-pay-form.docx');
 
@@ -44,7 +44,7 @@ class BigPayFormExporter
         ];
     }
 
-    private function fillDocument(string $documentXml, Project $project, Contract $contract): string
+    private function fillDocument(string $documentXml, ?Project $project, Contract $contract): string
     {
         $document = new DOMDocument();
         $document->preserveWhiteSpace = true;
@@ -54,7 +54,7 @@ class BigPayFormExporter
         $xpath = new DOMXPath($document);
         $xpath->registerNamespace('w', 'http://schemas.openxmlformats.org/wordprocessingml/2006/main');
 
-        $company = $contract->company ?: $project->company;
+        $company = $contract->company ?: $project?->company;
         $contact = $company?->user;
         $bankAccount = $company?->bankAccounts
             ?->sortByDesc(fn ($account) => (int) $account->is_primary)
@@ -65,7 +65,7 @@ class BigPayFormExporter
             'company_name' => (string) ($company?->name ?: ''),
             'contact_name' => (string) ($contact?->name ?: ''),
             'contact_phone' => (string) ($company?->telephone ?: $contact?->phone ?: ''),
-            'project_name' => (string) $project->name,
+            'project_name' => (string) ($project?->name ?: $contract->name),
             'contract_name' => (string) $contract->name,
             'contract_amount' => $this->formatAmount($contract->amount),
             'additional_contract_amount' => '',
@@ -230,10 +230,10 @@ class BigPayFormExporter
         return rtrim(rtrim($formatted, '0'), '.');
     }
 
-    private function buildDownloadName(Project $project, Contract $contract): string
+    private function buildDownloadName(?Project $project, Contract $contract): string
     {
-        $projectName = preg_replace('/[\\\\\\/:\*\?"<>\|]+/u', '-', $project->name) ?: 'project';
-        $contractName = preg_replace('/[\\\\\\/:\*\?"<>\|]+/u', '-', $contract->name) ?: 'contract';
+        $projectName = preg_replace('#[\\:*?"<>|/]+#u', '-', $project?->name ?: '未关联项目') ?: 'project';
+        $contractName = preg_replace('#[\\:*?"<>|/]+#u', '-', $contract->name) ?: 'contract';
 
         return $projectName.'-'.$contractName.'-大额付款审核表.docx';
     }

@@ -74,7 +74,7 @@
                                     </div>
                                     <div class="d-flex align-items-start">
                                         <a
-                                            href="{{ route('projects.contracts.big-pay-form', [$project->id, $contract->id]) }}"
+                                            href="{{ route('contracts.big-pay-form', $contract->id) }}"
                                             class="btn btn-primary"
                                         >
                                             导出审核表

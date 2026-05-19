@@ -42,9 +42,18 @@
                 <p class="text-sm font-semibold text-slate-900">合同编号：{{ $contract->code ?: '未填写' }}</p>
                 <p class="mt-1 text-sm text-slate-500">合同年份：{{ $contract->year }} · 可在下方直接修改合同状态与附件。</p>
             </div>
-            <a href="{{ route('projects.index') }}" class="inline-flex items-center rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
-                返回项目总览
-            </a>
+            <div class="flex flex-wrap items-center gap-3">
+                <a
+                    href="{{ route('contracts.big-pay-form', $contract->id) }}"
+                    class="inline-flex items-center rounded-xl bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700"
+                >
+                    导出大额申请单
+                </a>
+
+                <a href="{{ route('projects.index') }}" class="inline-flex items-center rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
+                    返回项目总览
+                </a>
+            </div>
         </div>
         <div class="mt-6">
             <contract :contract='@json($contract)'></contract>

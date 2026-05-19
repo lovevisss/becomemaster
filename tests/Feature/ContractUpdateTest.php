@@ -7,6 +7,8 @@ use App\Models\Contract;
 use App\Models\Status;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class ContractUpdateTest extends TestCase
@@ -105,6 +107,54 @@ class ContractUpdateTest extends TestCase
             'id' => $contract->id,
             'status_id' => $status->id,
         ]);
+    }
+
+    public function test_contract_invoice_can_be_uploaded_on_update(): void
+    {
+        Storage::fake('local');
+
+        $company = Company::create([
+            'name' => '测试公司C',
+        ]);
+
+        $user = User::factory()->create([
+            'company_id' => $company->id,
+        ]);
+
+        $status = Status::create([
+            'name' => '完成',
+        ]);
+
+        $contract = Contract::create([
+            'name' => '测试合同C',
+            'year' => 2026,
+            'path' => 'contracts/original-c.pdf',
+            'signing_date' => '2026-05-16',
+            'user_id' => $user->id,
+            'amount' => 26800,
+            'company_id' => $company->id,
+            'status_id' => $status->id,
+        ]);
+
+        $invoice = UploadedFile::fake()->create('invoice.pdf', 24, 'application/pdf');
+
+        $response = $this->put("/contract/{$contract->id}", [
+            'name' => $contract->name,
+            'year' => $contract->year,
+            'signing_date' => $contract->signing_date,
+            'user_id' => $user->id,
+            'amount' => $contract->amount,
+            'company_id' => $company->id,
+            'status_id' => $status->id,
+            'invoice' => $invoice,
+        ]);
+
+        $response->assertOk();
+
+        $contract->refresh();
+
+        $this->assertNotEmpty($contract->invoice);
+        Storage::disk('local')->assertExists('public/' . $contract->invoice);
     }
 }
 
