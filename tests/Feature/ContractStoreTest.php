@@ -48,8 +48,10 @@ class ContractStoreTest extends TestCase
         Storage::disk('local')->assertExists('public/'.$contract->path);
     }
 
-    public function test_contract_store_returns_validation_error_when_file_is_missing(): void
+    public function test_contract_can_be_created_without_uploaded_file(): void
     {
+        Storage::fake('local');
+
         $company = Company::create([
             'name' => '测试公司B',
         ]);
@@ -67,11 +69,28 @@ class ContractStoreTest extends TestCase
             'company_id' => $company->id,
         ]);
 
-        $response
-            ->assertStatus(422)
-            ->assertJson([
-                'message' => '请上传合同文件。',
-            ]);
+        $response->assertCreated();
+
+        $contract = Contract::query()->first();
+        $this->assertNotNull($contract);
+        $this->assertSame('测试合同无文件', $contract->name);
+        $this->assertNull($contract->path);
+
+        $update = $this->post("/contract/{$contract->id}", [
+            'name' => $contract->name,
+            'year' => $contract->year,
+            'signing_date' => $contract->signing_date,
+            'user_id' => $user->id,
+            'amount' => $contract->amount,
+            'company_id' => $company->id,
+            'path' => UploadedFile::fake()->create('later.pdf', 32, 'application/pdf'),
+        ], [
+            'X-HTTP-Method-Override' => 'PUT',
+        ]);
+
+        $update->assertOk();
+        $contract->refresh();
+        $this->assertNotEmpty($contract->path);
+        Storage::disk('local')->assertExists('public/'.$contract->path);
     }
 }
-

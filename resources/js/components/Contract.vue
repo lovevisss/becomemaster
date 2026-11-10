@@ -1,5 +1,25 @@
 <template>
     <form class="space-y-6 py-2" @submit.prevent="createContract">
+        <div v-if="editMode && hasPendingAttachmentChanges" class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 shadow-sm">
+            <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                    <p class="font-semibold">你有尚未保存的附件变更</p>
+                    <p class="mt-1 text-xs text-amber-700">已选择：{{ pendingAttachmentLabels.join('、') }}。请在对应附件区域点击“上传并保存”。</p>
+                </div>
+                <span class="inline-flex rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-700">
+                    待保存
+                </span>
+            </div>
+        </div>
+
+        <div v-if="submitMessage" class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 shadow-sm">
+            {{ submitMessage }}
+        </div>
+
+        <div v-if="submitError" class="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800 shadow-sm">
+            {{ submitError }}
+        </div>
+
         <div class="contract-main-grid">
             <div class="min-w-0 space-y-6">
                 <section class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
@@ -76,81 +96,86 @@
                 <section class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
                     <div class="mb-4 border-b border-slate-100 pb-4">
                         <h2 class="text-lg font-semibold text-slate-900">合同文件</h2>
-                        <p class="mt-1 text-sm text-slate-500">{{ editMode ? '支持替换当前合同文件，历史数据将以最新上传为准。' : '请上传合同正本或扫描件。' }}</p>
+                        <p class="mt-1 text-sm text-slate-500">{{ editMode ? '支持补传或替换合同文件，历史数据将以最新上传为准。' : '合同文件可在创建后补充上传。' }}</p>
                     </div>
 
-                    <div v-if="editMode && formData.path" class="mb-4 rounded-2xl border border-blue-100 bg-blue-50 p-4">
-                        <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                            <div class="min-w-0">
-                                <p class="text-sm font-medium text-slate-900">当前合同文件</p>
-                                <p class="mt-1 break-all text-xs text-slate-500">{{ displayFileName(formData.path) }}</p>
-                            </div>
-                            <a :href="filename" download class="inline-flex shrink-0 items-center rounded-xl bg-white px-3 py-2 text-sm font-medium text-blue-600 shadow-sm ring-1 ring-blue-200 hover:bg-blue-100">
-                                下载
-                            </a>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label for="path" class="mb-1 block text-sm font-medium text-slate-700">
-                            {{ editMode ? '替换合同文件' : '上传合同文件' }}
-                            <span v-if="!editMode" class="ml-0.5 text-red-500">*</span>
-                        </label>
-                        <input type="file" id="path" ref="fileInput" @change="handleFileChange" class="block w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 shadow-sm transition file:mr-4 file:rounded-lg file:border-0 file:bg-slate-100 file:px-3 file:py-2 file:text-sm file:font-medium file:text-slate-700 hover:file:bg-slate-200 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
-                        <p class="mt-2 text-xs text-slate-500">未上传文件时，创建合同不会提交成功。</p>
-                        <p v-if="selectedFile" class="mt-2 text-xs font-medium text-emerald-600">已选择：{{ selectedFile.name }}</p>
-                    </div>
+                    <AttachmentUploadSection
+                        id="path"
+                        title="合同文件"
+                        :existing-path="formData.path"
+                        :download-url="filename"
+                        :selected-file="selectedFile"
+                        :input-label="editMode ? '替换合同文件' : '上传合同文件'"
+                        helper-text="合同文件可后续补充上传。"
+                        pending-prefix="待替换文件"
+                        :pending-helper-text="editMode ? '点击“上传并保存”后才会正式覆盖当前合同文件。' : '创建合同时会一并上传。'"
+                        :required="false"
+                        :show-current-card="editMode"
+                        :highlight-pending="true"
+                        :independent-upload="editMode"
+                        :uploading="uploadingAttachment === 'path'"
+                        :upload-message="attachmentMessages.path"
+                        :upload-error="attachmentErrors.path"
+                        @file-change="handleFileChange"
+                        @upload="uploadAttachment('path')"
+                    />
                 </section>
 
                 <section v-if="editMode" class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
                     <div class="mb-4 border-b border-slate-100 pb-4">
                         <h2 class="text-lg font-semibold text-slate-900">附属材料</h2>
-                        <p class="mt-1 text-sm text-slate-500">可继续补充询价纪要与验收文件。</p>
+                        <p class="mt-1 text-sm text-slate-500">可继续补充询价纪要、验收文件与发票信息。</p>
                     </div>
 
                     <div class="space-y-4">
-                        <div class="rounded-2xl border border-slate-200 p-4">
-                            <div class="mb-3 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                                <div class="min-w-0">
-                                    <p class="text-sm font-medium text-slate-900">询价纪要</p>
-                                    <p class="mt-1 text-xs text-slate-500">{{ formData.consult ? displayFileName(formData.consult) : '暂未上传' }}</p>
-                                </div>
-                                <a v-if="formData.consult" :href="fileconsult" download class="inline-flex items-center rounded-xl bg-slate-100 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-200">下载</a>
-                            </div>
-                            <input type="file" id="consult" ref="consultInput" @change="handleConsultChange" class="block w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 shadow-sm transition file:mr-4 file:rounded-lg file:border-0 file:bg-slate-100 file:px-3 file:py-2 file:text-sm file:font-medium file:text-slate-700 hover:file:bg-slate-200 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
-                            <p v-if="selectedConsult" class="mt-2 text-xs font-medium text-emerald-600">已选择：{{ selectedConsult.name }}</p>
-                        </div>
+                        <AttachmentUploadSection
+                            id="consult"
+                            title="询价纪要"
+                            :existing-path="formData.consult"
+                            :download-url="fileconsult"
+                            :selected-file="selectedConsult"
+                            :independent-upload="true"
+                            :uploading="uploadingAttachment === 'consult'"
+                            :upload-message="attachmentMessages.consult"
+                            :upload-error="attachmentErrors.consult"
+                            @file-change="handleConsultChange"
+                            @upload="uploadAttachment('consult')"
+                        />
 
-                        <div class="rounded-2xl border border-slate-200 p-4">
-                            <div class="mb-3 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                                <div class="min-w-0">
-                                    <p class="text-sm font-medium text-slate-900">验收文件</p>
-                                    <p class="mt-1 text-xs text-slate-500">{{ formData.acceptance ? displayFileName(formData.acceptance) : '暂未上传' }}</p>
-                                </div>
-                                <a v-if="formData.acceptance" :href="fileacceptance" download class="inline-flex items-center rounded-xl bg-slate-100 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-200">下载</a>
-                            </div>
-                            <input type="file" id="acceptance" ref="acceptanceInput" @change="handleAcceptanceChange" class="block w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 shadow-sm transition file:mr-4 file:rounded-lg file:border-0 file:bg-slate-100 file:px-3 file:py-2 file:text-sm file:font-medium file:text-slate-700 hover:file:bg-slate-200 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
-                            <p v-if="selectedAcceptance" class="mt-2 text-xs font-medium text-emerald-600">已选择：{{ selectedAcceptance.name }}</p>
-                        </div>
+                        <AttachmentUploadSection
+                            id="acceptance"
+                            title="验收文件"
+                            :existing-path="formData.acceptance"
+                            :download-url="fileacceptance"
+                            :selected-file="selectedAcceptance"
+                            :independent-upload="true"
+                            :uploading="uploadingAttachment === 'acceptance'"
+                            :upload-message="attachmentMessages.acceptance"
+                            :upload-error="attachmentErrors.acceptance"
+                            @file-change="handleAcceptanceChange"
+                            @upload="uploadAttachment('acceptance')"
+                        />
 
-                        <div class="rounded-2xl border border-slate-200 p-4">
-                            <div class="mb-3 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                                <div class="min-w-0">
-                                    <p class="text-sm font-medium text-slate-900">发票信息</p>
-                                    <p class="mt-1 text-xs text-slate-500">{{ formData.invoice ? displayFileName(formData.invoice) : '暂未上传' }}</p>
-                                </div>
-                                <a v-if="formData.invoice" :href="fileinvoice" download class="inline-flex items-center rounded-xl bg-slate-100 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-200">下载</a>
-                            </div>
-                            <input type="file" id="invoice" ref="invoiceInput" @change="handleInvoiceChange" class="block w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 shadow-sm transition file:mr-4 file:rounded-lg file:border-0 file:bg-slate-100 file:px-3 file:py-2 file:text-sm file:font-medium file:text-slate-700 hover:file:bg-slate-200 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
-                            <p v-if="selectedInvoice" class="mt-2 text-xs font-medium text-emerald-600">已选择：{{ selectedInvoice.name }}</p>
-                        </div>
+                        <AttachmentUploadSection
+                            id="invoice"
+                            title="发票信息"
+                            :existing-path="formData.invoice"
+                            :download-url="fileinvoice"
+                            :selected-file="selectedInvoice"
+                            :independent-upload="true"
+                            :uploading="uploadingAttachment === 'invoice'"
+                            :upload-message="attachmentMessages.invoice"
+                            :upload-error="attachmentErrors.invoice"
+                            @file-change="handleInvoiceChange"
+                            @upload="uploadAttachment('invoice')"
+                        />
                     </div>
                 </section>
             </div>
         </div>
 
         <div class="flex flex-col gap-3 rounded-3xl border border-slate-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-5">
-            <p class="text-sm text-slate-500">保存成功后将返回项目总览页面。</p>
+            <p class="text-sm text-slate-500">{{ editMode ? '更新保存基础信息；附件请在对应区域单独上传。' : '保存成功后将返回项目总览页面。' }}</p>
             <div class="flex flex-wrap items-center gap-3">
                 <a href="/projects" class="inline-flex items-center rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50">取消</a>
                 <button type="submit" class="inline-flex items-center rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400" :disabled="isSubmitting">{{ buttonName }}</button>
@@ -160,10 +185,11 @@
 </template>
 
 <script>
+import AttachmentUploadSection from "./AttachmentUploadSection.vue";
 import FormField from "./FormField.vue";
 
 export default {
-    components: { FormField },
+    components: { AttachmentUploadSection, FormField },
     props: ['contract'],
 
     mounted() {
@@ -195,6 +221,33 @@ export default {
         },
         fileacceptance: function () {
             return this.fileUrl(this.formData.acceptance);
+        },
+        fileinvoice: function () {
+            return this.fileUrl(this.formData.invoice);
+        },
+        hasPendingAttachmentChanges: function () {
+            return !!(this.selectedFile || this.selectedConsult || this.selectedAcceptance || this.selectedInvoice);
+        },
+        pendingAttachmentLabels: function () {
+            const labels = [];
+
+            if (this.selectedFile) {
+                labels.push('合同文件');
+            }
+
+            if (this.selectedConsult) {
+                labels.push('询价纪要');
+            }
+
+            if (this.selectedAcceptance) {
+                labels.push('验收文件');
+            }
+
+            if (this.selectedInvoice) {
+                labels.push('发票信息');
+            }
+
+            return labels;
         }
     },
 
@@ -215,11 +268,18 @@ export default {
                 contract_type_id: '',
                 path: '',
                 consult: '',
-                acceptance: ''
+                acceptance: '',
+                invoice: ''
             },
             selectedFile: null,
             selectedConsult: null,
             selectedAcceptance: null,
+            selectedInvoice: null,
+            uploadingAttachment: '',
+            attachmentMessages: { path: '', consult: '', acceptance: '', invoice: '' },
+            attachmentErrors: { path: '', consult: '', acceptance: '', invoice: '' },
+            submitMessage: '',
+            submitError: '',
             isSubmitting: false,
             users: [],
             usersLoading: false,
@@ -238,6 +298,13 @@ export default {
     },
 
     methods: {
+        applyContractData(contract) {
+            this.formData = {
+                ...this.formData,
+                ...this.normalizeContract(contract)
+            };
+        },
+
         normalizeContract(contract) {
             return {
                 name: contract.name ?? '',
@@ -254,8 +321,21 @@ export default {
                 contract_type_id: contract.contract_type_id ?? '',
                 path: contract.path ?? '',
                 consult: contract.consult ?? '',
-                acceptance: contract.acceptance ?? ''
+                acceptance: contract.acceptance ?? '',
+                invoice: contract.invoice ?? ''
             };
+        },
+
+        resetSelectedFiles() {
+            this.selectedFile = null;
+            this.selectedConsult = null;
+            this.selectedAcceptance = null;
+            this.selectedInvoice = null;
+        },
+
+        clearMessages() {
+            this.submitMessage = '';
+            this.submitError = '';
         },
 
         initializeUsers() {
@@ -299,18 +379,14 @@ export default {
                 return;
             }
 
-            if (!this.editMode && !this.selectedFile) {
-                alert('请先上传合同文件。');
-                return;
-            }
-
+            this.clearMessages();
             this.isSubmitting = true;
 
             this.formData.amount = this.normalizeNumericValue(this.formData.amount);
             this.formData.fulfillmentDeposit = this.normalizeNumericValue(this.formData.fulfillmentDeposit);
 
             const payload = new FormData();
-            const excludedFields = ['path', 'consult', 'acceptance'];
+            const excludedFields = ['path', 'consult', 'acceptance', 'invoice'];
             for (const key in this.formData) {
                 if (excludedFields.includes(key)) {
                     continue;
@@ -321,14 +397,8 @@ export default {
                 payload.append(key, this.formData[key]);
             }
 
-            if (this.selectedFile) {
+            if (!this.editMode && this.selectedFile) {
                 payload.append('path', this.selectedFile);
-            }
-            if (this.selectedConsult) {
-                payload.append('consult', this.selectedConsult);
-            }
-            if (this.selectedAcceptance) {
-                payload.append('acceptance', this.selectedAcceptance);
             }
 
             const config = {
@@ -340,15 +410,20 @@ export default {
 
             if (this.editMode) {
                 axios.post('/contract/' + this.contract.id, payload, config)
-                    .then(() => {
-                        window.location.href = '/projects';
+                    .then((response) => {
+                        if (response.data) {
+                            this.applyContractData(response.data);
+                        }
+
+                        this.submitMessage = '合同基础信息更新成功。';
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
                     })
                     .catch((error) => {
                         console.log(error);
                         const message = (error.response && error.response.data && error.response.data.message)
                             ? error.response.data.message
                             : '更新失败，请检查表单后重试。';
-                        alert(message);
+                        this.submitError = message;
                     })
                     .finally(() => {
                         this.isSubmitting = false;
@@ -363,7 +438,7 @@ export default {
                         const message = (error.response && error.response.data && error.response.data.message)
                             ? error.response.data.message
                             : '创建失败，请检查表单后重试。';
-                        alert(message);
+                        this.submitError = message;
                     })
                     .finally(() => {
                         this.isSubmitting = false;
@@ -372,15 +447,64 @@ export default {
         },
 
         handleFileChange(event) {
+            this.clearMessages();
+            this.attachmentMessages.path = '';
+            this.attachmentErrors.path = '';
             this.selectedFile = event.target.files[0];
         },
 
         handleConsultChange(event) {
+            this.clearMessages();
+            this.attachmentMessages.consult = '';
+            this.attachmentErrors.consult = '';
             this.selectedConsult = event.target.files[0];
         },
 
         handleAcceptanceChange(event) {
+            this.clearMessages();
+            this.attachmentMessages.acceptance = '';
+            this.attachmentErrors.acceptance = '';
             this.selectedAcceptance = event.target.files[0];
+        },
+
+        handleInvoiceChange(event) {
+            this.clearMessages();
+            this.attachmentMessages.invoice = '';
+            this.attachmentErrors.invoice = '';
+            this.selectedInvoice = event.target.files[0];
+        },
+
+        async uploadAttachment(type) {
+            const selected = {
+                path: this.selectedFile,
+                consult: this.selectedConsult,
+                acceptance: this.selectedAcceptance,
+                invoice: this.selectedInvoice
+            }[type];
+            if (!this.editMode || !selected || this.uploadingAttachment) {
+                return;
+            }
+
+            this.uploadingAttachment = type;
+            this.attachmentMessages[type] = '';
+            this.attachmentErrors[type] = '';
+            const payload = new FormData();
+            payload.append('file', selected);
+
+            try {
+                const response = await axios.post(`/contract/${this.contract.id}/attachments/${type}`, payload);
+                this.formData[type] = response.data.path;
+                const selectionKey = { path: 'selectedFile', consult: 'selectedConsult', acceptance: 'selectedAcceptance', invoice: 'selectedInvoice' }[type];
+                if (this[selectionKey] === selected) {
+                    this[selectionKey] = null;
+                }
+                this.attachmentMessages[type] = '上传成功';
+            } catch (error) {
+                const data = error.response?.data;
+                this.attachmentErrors[type] = data?.errors?.file?.[0] || data?.message || '上传失败，请重试。';
+            } finally {
+                this.uploadingAttachment = '';
+            }
         },
 
         fileUrl(path) {
@@ -389,14 +513,6 @@ export default {
             }
 
             return `/storage/${path}`;
-        },
-
-        displayFileName(path) {
-            if (!path) {
-                return '';
-            }
-
-            return String(path).split('/').pop();
         },
 
         normalizeNumericValue(value) {

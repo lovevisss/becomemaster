@@ -38,15 +38,6 @@ class ContractController extends Controller
      */
     public function store(Request $request)
     {
-        if (!$request->hasFile('path')) {
-            return response()->json(['message' => '请上传合同文件。'], 422);
-        }
-
-        $file = $request->file('path');
-        if (!$file || !$file->isValid()) {
-            return response()->json(['message' => '合同文件无效或上传失败，请重新上传。'], 422);
-        }
-
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'year' => ['required', 'integer'],
@@ -65,16 +56,23 @@ class ContractController extends Controller
             'funding_id' => ['nullable', 'integer', 'exists:fundings,id'],
             'project_type_id' => ['nullable', 'integer', 'exists:project_types,id'],
             'contract_type_id' => ['nullable', 'integer', 'exists:contract_types,id'],
-            'path' => ['required', 'file'],
+            'path' => ['nullable', 'file'],
         ]);
 
-
-        $path = $file->store('public/contracts');
-        $path = str_replace('public/', '', $path);
-
         $contract = Contract::create(array_diff_key($validated, ['path' => true]));
-        $contract->path = $path;
+
+        $file = $request->file('path');
+        if ($file) {
+            if (!$file->isValid()) {
+                return response()->json(['message' => '合同文件无效或上传失败，请重新上传。'], 422);
+            }
+
+            $path = $file->store('public/contracts');
+            $contract->path = str_replace('public/', '', $path);
+        }
+
         $contract->save();
+
         return $contract;
     }
 
@@ -175,6 +173,45 @@ class ContractController extends Controller
         $contract->save();
 
         return response()->json($contract->fresh(['company', 'user', 'status']));
+    }
+
+    public function uploadAttachment(Request $request, Contract $contract, string $type)
+    {
+        $labels = [
+            'path' => '合同文件',
+            'consult' => '询价纪要',
+            'acceptance' => '验收文件',
+            'invoice' => '发票信息',
+        ];
+
+        if (!isset($labels[$type])) {
+            return response()->json(['message' => '不支持的附件类型。'], 422);
+        }
+
+        $request->validate([
+            'file' => ['required', 'file', 'max:20480'],
+        ], [
+            'file.required' => '请选择要上传的文件。',
+            'file.file' => '上传的文件无效。',
+            'file.max' => '文件不能超过20MB。',
+        ]);
+
+        $file = $request->file('file');
+        $path = $file->store('public/contracts');
+
+        if (!$path) {
+            return response()->json(['message' => '文件保存失败，请重试。'], 500);
+        }
+
+        $contract->{$type} = str_replace('public/', '', $path);
+        $contract->save();
+
+        return response()->json([
+            'type' => $type,
+            'path' => $contract->{$type},
+            'name' => basename($contract->{$type}),
+            'download_url' => asset('storage/'.$contract->{$type}),
+        ]);
     }
 
     /**

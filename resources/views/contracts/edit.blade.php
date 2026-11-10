@@ -10,7 +10,7 @@
                     </div>
                     <h1 class="mt-4 break-words text-3xl font-semibold tracking-tight sm:text-4xl">编辑合同：{{ $contract->name }}</h1>
                     <p class="mt-2 max-w-3xl text-sm leading-7 text-slate-300 sm:text-base">
-                        在这里可以调整合同状态、签订信息、金额分类以及补传合同附件。保存后将返回项目总览。
+                        在这里可以调整合同状态、签订信息、金额分类以及补传合同附件。更新后可在当前页面核对结果。
                     </p>
                 </div>
 

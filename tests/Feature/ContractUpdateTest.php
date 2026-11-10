@@ -138,7 +138,7 @@ class ContractUpdateTest extends TestCase
 
         $invoice = UploadedFile::fake()->create('invoice.pdf', 24, 'application/pdf');
 
-        $response = $this->put("/contract/{$contract->id}", [
+        $response = $this->post("/contract/{$contract->id}", [
             'name' => $contract->name,
             'year' => $contract->year,
             'signing_date' => $contract->signing_date,
@@ -147,14 +147,22 @@ class ContractUpdateTest extends TestCase
             'company_id' => $company->id,
             'status_id' => $status->id,
             'invoice' => $invoice,
+        ], [
+            'X-HTTP-Method-Override' => 'PUT',
         ]);
 
-        $response->assertOk();
+        $response
+            ->assertOk()
+            ->assertJsonStructure(['invoice']);
 
         $contract->refresh();
 
         $this->assertNotEmpty($contract->invoice);
+        $this->assertSame($contract->invoice, $response->json('invoice'));
         Storage::disk('local')->assertExists('public/' . $contract->invoice);
+
+        $this->get("/contract/{$contract->id}/edit")
+            ->assertOk()
+            ->assertSee(str_replace('/', '\\/', $contract->invoice), false);
     }
 }
-
