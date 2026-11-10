@@ -111,7 +111,18 @@
                             </td>
                             <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ number_format((float) $contract->amount, 2) }}</td>
                             <td class="px-4 py-3 whitespace-nowrap">
-                                <span class="inline-flex rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700">{{ optional($contract->status)->name ?? '-' }}</span>
+                                @php
+                                    $statusName = optional($contract->status)->name;
+                                    $statusColor = match ($statusName) {
+                                        '申请' => 'bg-blue-50 text-blue-700 ring-blue-200',
+                                        '实施' => 'bg-amber-50 text-amber-800 ring-amber-200',
+                                        '结算' => 'bg-cyan-50 text-cyan-800 ring-cyan-200',
+                                        '待退质保金' => 'bg-orange-50 text-orange-800 ring-orange-200',
+                                        '完成' => 'bg-emerald-50 text-emerald-700 ring-emerald-200',
+                                        default => 'bg-slate-100 text-slate-700 ring-slate-200',
+                                    };
+                                @endphp
+                                <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset {{ $statusColor }}">{{ $statusName ?? '-' }}</span>
                             </td>
                             <td class="px-4 py-3 whitespace-nowrap">
                                 <a href="{{ route('contract.edit', $contract->id) }}" class="text-blue-600 hover:text-blue-700 hover:underline">编辑</a>
