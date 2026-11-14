@@ -8,6 +8,8 @@ use App\Models\Contract;
 use App\Models\Funding;
 use App\Models\Project;
 use App\Models\User;
+use DOMDocument;
+use DOMXPath;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use ZipArchive;
@@ -86,6 +88,26 @@ class BigPayFormExportTest extends TestCase
         $this->assertStringContainsString('XM2026001', $documentXml);
         $this->assertStringContainsString('中国银行杭州分行', $documentXml);
         $this->assertStringContainsString('6222020202020202', $documentXml);
+
+        $document = new DOMDocument();
+        $document->loadXML($documentXml);
+        $xpath = new DOMXPath($document);
+        $xpath->registerNamespace('w', 'http://schemas.openxmlformats.org/wordprocessingml/2006/main');
+        $signatureCell = $xpath->query('//w:tr[w:tc[1]//w:t[contains(., "本次支付依据")]]/w:tc[2]')->item(0);
+
+        $this->assertNotNull($signatureCell);
+        $this->assertSame(['经办人签字：', '年　月　日'], array_map(
+            fn ($node) => $node->textContent,
+            iterator_to_array($xpath->query('./w:p/w:r/w:t', $signatureCell))
+        ));
+        $this->assertSame(1, $xpath->query('./w:p', $signatureCell)->length);
+        $this->assertSame(2, $xpath->query('./w:p/w:r/w:tab', $signatureCell)->length);
+        $this->assertSame('left', $xpath->evaluate('string(./w:p/w:pPr/w:jc/@w:val)', $signatureCell));
+        $this->assertSame('3000', $xpath->evaluate('string(./w:p/w:pPr/w:tabs/w:tab[1]/@w:pos)', $signatureCell));
+        $this->assertSame('8000', $xpath->evaluate('string(./w:p/w:pPr/w:tabs/w:tab[2]/@w:pos)', $signatureCell));
+        $this->assertSame('right', $xpath->evaluate('string(./w:p/w:pPr/w:tabs/w:tab[2]/@w:val)', $signatureCell));
+        $this->assertSame('bottom', $xpath->evaluate('string(./w:tcPr/w:vAlign/@w:val)', $signatureCell));
+        $this->assertStringNotContainsString('合同签订后10日内', $signatureCell->textContent);
     }
 
     public function test_contract_big_pay_form_can_be_exported_without_project(): void

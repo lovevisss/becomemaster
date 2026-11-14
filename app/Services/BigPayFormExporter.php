@@ -72,7 +72,6 @@ class BigPayFormExporter
             'fulfillment_deposit' => $this->formatAmount($contract->fulfillmentDeposit),
             'settlement_amount' => '',
             'additional_settlement_amount' => '',
-            'payment_basis' => '按合同约定申请支付合同款。                        经办人签字：                年    月    日',
             'paid_amount' => $this->formatAmount($contract->paid_amount),
             'funding_name' => (string) ($contract->funding?->name ?: ''),
             'current_payment' => $this->formatAmount($contract->amount),
@@ -146,7 +145,7 @@ class BigPayFormExporter
             }
 
             if (($normalized[0] ?? '') === '本次支付依据（项目完成情况或合同支付条款等）') {
-                $this->setCellText($xpath, $cells[1], $fields['payment_basis']);
+                $this->setPaymentBasisSignature($xpath, $cells[1]);
                 continue;
             }
 
@@ -193,6 +192,67 @@ class BigPayFormExporter
         }
 
         $this->setTextNodesValue($textNodes, $value);
+    }
+
+    private function setPaymentBasisSignature(DOMXPath $xpath, DOMElement $cell): void
+    {
+        $namespace = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
+        $document = $cell->ownerDocument;
+        $lastParagraph = $xpath->query('./w:p', $cell)->item(4);
+        $runProperties = $lastParagraph instanceof DOMElement
+            ? $xpath->query('./w:r/w:rPr', $lastParagraph)->item(0)
+            : null;
+
+        foreach (iterator_to_array($xpath->query('./w:p', $cell)) as $paragraph) {
+            $cell->removeChild($paragraph);
+        }
+
+        $cellProperties = $xpath->query('./w:tcPr', $cell)->item(0);
+        if ($cellProperties instanceof DOMElement) {
+            $verticalAlignment = $xpath->query('./w:vAlign', $cellProperties)->item(0);
+            if (!$verticalAlignment instanceof DOMElement) {
+                $verticalAlignment = $document->createElementNS($namespace, 'w:vAlign');
+                $cellProperties->appendChild($verticalAlignment);
+            }
+            $verticalAlignment->setAttributeNS($namespace, 'w:val', 'bottom');
+
+            $margins = $document->createElementNS($namespace, 'w:tcMar');
+            foreach (['bottom' => 80, 'right' => 120] as $side => $width) {
+                $margin = $document->createElementNS($namespace, 'w:'.$side);
+                $margin->setAttributeNS($namespace, 'w:w', (string) $width);
+                $margin->setAttributeNS($namespace, 'w:type', 'dxa');
+                $margins->appendChild($margin);
+            }
+            $cellProperties->insertBefore($margins, $verticalAlignment);
+        }
+
+        $paragraph = $document->createElementNS($namespace, 'w:p');
+        $paragraphProperties = $document->createElementNS($namespace, 'w:pPr');
+        $tabs = $document->createElementNS($namespace, 'w:tabs');
+        foreach ([['left', '3000'], ['right', '8000']] as [$position, $offset]) {
+            $tabStop = $document->createElementNS($namespace, 'w:tab');
+            $tabStop->setAttributeNS($namespace, 'w:val', $position);
+            $tabStop->setAttributeNS($namespace, 'w:pos', $offset);
+            $tabs->appendChild($tabStop);
+        }
+        $paragraphProperties->appendChild($tabs);
+        $alignment = $document->createElementNS($namespace, 'w:jc');
+        $alignment->setAttributeNS($namespace, 'w:val', 'left');
+        $paragraphProperties->appendChild($alignment);
+        $paragraph->appendChild($paragraphProperties);
+
+        foreach (['经办人签字：', '年　月　日'] as $value) {
+            $run = $document->createElementNS($namespace, 'w:r');
+            if ($runProperties instanceof DOMElement) {
+                $run->appendChild($runProperties->cloneNode(true));
+            }
+            $run->appendChild($document->createElementNS($namespace, 'w:tab'));
+            $text = $document->createElementNS($namespace, 'w:t');
+            $text->appendChild($document->createTextNode($value));
+            $run->appendChild($text);
+            $paragraph->appendChild($run);
+        }
+        $cell->appendChild($paragraph);
     }
 
     private function setTextNodesValue(array $textNodes, string $value): void
